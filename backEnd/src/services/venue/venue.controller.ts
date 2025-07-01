@@ -1,7 +1,8 @@
 
 import { Response,Request, response } from "express";
-import { getAllDetailsForVenue, getAllVenueServices, getVenueByIdServices, searchVenuesByName } from "./venue.service";
+import { CreateVenueServices, deleteVenueByIdServices, getAllDetailsForVenue, getAllVenueServices, getVenueByIdServices, searchVenuesByName, updateVenueServices } from "./venue.service";
 
+// Get all Venues
 export const GetAllVenues = async(req: Request, res: Response) =>{
     try {
         const AllVenues = await getAllVenueServices();
@@ -16,6 +17,7 @@ export const GetAllVenues = async(req: Request, res: Response) =>{
     }
 }
 
+// Get Venue By Name
 export const getVenueByName = async (req: Request, res: Response)=>{
    const VenueName =  req.params.name;   
    try {
@@ -50,6 +52,7 @@ export const searchVenue = async(req: Request,res: Response) => {
     }
 }
 
+// Get full Venue Details 
 export const venueDetails = async (req: Request, res: Response) =>{
     const venueName = req.query.name as string;
     if(!venueName){
@@ -67,3 +70,53 @@ export const venueDetails = async (req: Request, res: Response) =>{
         res.status(500).json({error: error.message || "Error Occured...Failed To Fetch Venue Details🥲"});
     }
 }
+
+// Create a Venue
+export const CreateVenue = async(req: Request, res: Response) =>{
+    const {name, address, capacity , createdAt} = req.body;
+    if(!name || !address || !capacity  || !createdAt){
+       res.status(400).json({ error: "⚠️ All Fields Are Required" });
+    }
+    try {
+     const results = await CreateVenueServices({name, address, capacity , createdAt});
+     res.status(200).json({message: results});
+        
+    } catch (error:any) {
+    res.status(500).json({error: "⚠️ " + (error.message || "Error Occured while creating Venue")})
+   }
+}
+
+// Deleting A venue
+export const DeleteVenue = async(req: Request, res: Response) =>{
+    const venueId = parseInt(req.params.id);
+    if(isNaN(venueId)){
+        res.status(400).json({ error: "🚫 Invalid Venue ID" });
+        return;
+    }
+    
+   try {
+    const result = await deleteVenueByIdServices(venueId);
+    res.status(200).json({ message: "✅ " + result }); 
+  } catch (error: any) {
+    res.status(500).json({ error: "🚫 " + (error.message || "Failed to delete user") });
+  }
+}
+// Updating Venue
+export const updateVenue = async (req: Request, res: Response) => {
+  const venueId = parseInt(req.params.id);
+  if (isNaN(venueId)) {
+    res.status(400).json({ error: "🚫 Invalid venue ID" });
+    return;
+  }
+  const { name, address, capacity , createdAt} = req.body;
+  if (!name || !address || !capacity  || !createdAt) {
+    res.status(400).json({ error: "⚠️ All fields are required" });
+    return;
+  }
+  try {
+    const result = await updateVenueServices(venueId, { name, address, capacity , createdAt });
+    res.status(200).json({ message: "✅ " + result });
+  } catch (error: any) {
+    res.status(500).json({ error: "🚫 " + (error.message || "Failed to update venue") });
+  }
+};

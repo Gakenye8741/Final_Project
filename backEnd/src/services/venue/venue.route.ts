@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { GetAllVenues, getVenueByName, searchVenue, venueDetails } from "./venue.controller";
+import { CreateVenue, DeleteVenue, GetAllVenues, getVenueByName, searchVenue, updateVenue, venueDetails } from "./venue.controller";
 
 
 export const venueRoute = Router();
@@ -17,3 +17,11 @@ venueRoute.get('/venues/:name', getVenueByName)
 //Get All Venue details
 venueRoute.get('/details/venues/:name', venueDetails)
 
+// // Create a new user
+venueRoute.post("/venues", CreateVenue);
+
+// Update an existing user
+venueRoute.put("/venues/:userId", updateVenue);
+
+// Delete an existing user
+venueRoute.delete("/venues/:id", DeleteVenue);

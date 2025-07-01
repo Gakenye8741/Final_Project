@@ -11,19 +11,22 @@ GET http://localhost:5000/api/users/1/details
 GET http://localhost:5000/api/users/
 
 ###
-GET http://localhost:5000/api/users-search?lastName=s
+GET http://localhost:5000/api/users-search?lastName=j
 
 ###
 GET http://localhost:5000/api/tickets/2/details
 
 ###
-GET http://localhost:5000/api/venues
+GET http://localhost:5000/api/venues/4
 
 ###
 GET http://localhost:5000/api/venues/search?name=r
 
 ###
-GET http://localhost:5000/api/details/venues/search?name=city
+GET http://localhost:5000/api/details/venues/search?name=
+
+###
+DELETE http://localhost:5000/api/venues/4ererw
 
 
 
