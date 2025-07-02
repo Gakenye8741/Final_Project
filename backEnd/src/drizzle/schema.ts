@@ -21,11 +21,11 @@ export const ticketStatusEnum = pgEnum("status", ["Open", "In Progress", "Resolv
 // USERS
 export const users = pgTable("users", {
   userId: serial("userId").primaryKey(),
-  firstName: varchar("firstName", { length: 100 }).notNull(),
-  lastName: varchar("lastName", { length: 100 }).notNull(),
+  firstName: varchar("firstName", { length: 15 }).notNull(),
+  lastName: varchar("lastName", { length: 15 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   password: text("password").notNull(),
-  contactPhone: varchar("contactPhone", { length: 20 }),
+  contactPhone: varchar("contactPhone", { length: 15 }),
   address: text("address"),
   role: roleEnum("role").default("user").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

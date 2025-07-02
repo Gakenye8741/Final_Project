@@ -5,13 +5,17 @@ GET http://localhost:5000/
 GET http://localhost:5000/api/users
 
 ###
-GET http://localhost:5000/api/users/1/details
+DELETE http://localhost:5000/api/users/13
+
 
 ###
 GET http://localhost:5000/api/users/
 
 ###
-GET http://localhost:5000/api/users-search?lastName=j
+GET http://localhost:5000/api/users/10/details
+
+###
+GET http://localhost:5000/api/users-search?lastName=u
 
 ###
 GET http://localhost:5000/api/tickets/2/details
@@ -20,13 +24,89 @@ GET http://localhost:5000/api/tickets/2/details
 GET http://localhost:5000/api/venues/4
 
 ###
-GET http://localhost:5000/api/venues/search?name=r
+GET http://localhost:5000/api/venues/search?name=GA
 
 ###
 GET http://localhost:5000/api/details/venues/search?name=
 
 ###
 DELETE http://localhost:5000/api/venues/4ererw
+
+###
+POST  http://localhost:5000/api/events
+Content-Type: application/json
+
+{
+  "title": "Nairobi Tech Meetup - July Edition",
+  "description": "Monthly gathering for developers and tech enthusiasts in Nairobi.",
+  "venueId": 2,
+  "category": "Technology",
+  "date": "2025-07-25",
+  "time": "18:30:00",
+  "ticketPrice": 15.00,
+  "ticketsTotal": 120
+}
+
+###
+GET  http://localhost:5000/api/bookings
+
+###
+POST   http://localhost:5000/api/bookings
+Content-Type: application/json
+
+{
+  "userId": 1,        
+  "eventId": 5,      
+  "quantity": 2,      
+  "totalAmount": 30.00, 
+  "bookingStatus": "Confirmed" 
+}
+
+###
+GET http://localhost:5000/api/bookings
+
+###
+GET  http://localhost:5000/api/payments
+
+
+
+####
+Content-Type: application/json
+
+{
+  "bookingId": 3,         
+  "amount": 30.00,  
+  "paymentStatus": "Completed", 
+  "paymentMethod": "M-Pesa",  
+  "transactionId": "TXN123456789" 
+}
+
+###
+DELETE http://localhost:5000/api/auth/register/11
+
+
+###
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Brian",
+  "lastName": "Gakenye",
+  "email": "codewithgakenye@gmail.com",
+  "password": "password3" ,
+  "contactPhone": "0112310754",
+  "address": "BOX 1000 Nyeri"
+}
+
+###
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  
+  "email": "codewithgakenye1@gmail.com",
+  "password": "password3" 
+}
 
 
 

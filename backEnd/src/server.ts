@@ -6,6 +6,11 @@ import { logger } from './middleware/logger';
 import { userRouter } from './services/users/user.route';
 import { TicketsRoute } from './services/tickets/ticket.route';
 import { venueRoute } from './services/venue/venue.route';
+import { eventRouter } from './services/events/events.route';
+import { bookingRouter } from './services/bookings/bookings.route';
+import { paymentRouter } from './services/payments/payments.route';
+import { authRouter } from './auth/auth.route';
+import { rateLimiterMiddleware } from './middleware/rate-limiter';
 // import userRoute from './services/users/user.route';
 
 dotenv.config();
@@ -18,6 +23,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(logger); // custom logger middleware
 
+
+// Rate Limiter Middleware
+app.use(rateLimiterMiddleware);
+
 // ✅ Default route
 app.get('/', (_req, res: Response) => {
   res.send("🚀 Welcome to the Event Ticketing & Venue Booking System API (Drizzle + PostgreSQL Designed by Gakenye Ndiritu😎)");
@@ -25,9 +34,13 @@ app.get('/', (_req, res: Response) => {
 
 // ✅ API routes
 
+app.use('/api',authRouter);
 app.use('/api', userRouter)
 app.use('/api', TicketsRoute)
 app.use('/api', venueRoute)
+app.use('/api',eventRouter)
+app.use('/api', bookingRouter)
+app.use('/api', paymentRouter)
 
 // ✅ Start server
 app.listen(PORT, () => {
