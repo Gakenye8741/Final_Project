@@ -73,12 +73,12 @@ export const venueDetails = async (req: Request, res: Response) =>{
 
 // Create a Venue
 export const CreateVenue = async(req: Request, res: Response) =>{
-    const {name, address, capacity , createdAt} = req.body;
-    if(!name || !address || !capacity  || !createdAt){
+    const {name, address, capacity } = req.body;
+    if(!name || !address || !capacity ){
        res.status(400).json({ error: "⚠️ All Fields Are Required" });
     }
     try {
-     const results = await CreateVenueServices({name, address, capacity , createdAt});
+     const results = await CreateVenueServices({name, address, capacity });
      res.status(200).json({message: results});
         
     } catch (error:any) {
@@ -96,9 +96,9 @@ export const DeleteVenue = async(req: Request, res: Response) =>{
     
    try {
     const result = await deleteVenueByIdServices(venueId);
-    res.status(200).json({ message: "✅ " + result }); 
+    res.status(200).json({ message: "✅ Venue Deleted Suuceesfully"}); 
   } catch (error: any) {
-    res.status(500).json({ error: "🚫 " + (error.message || "Failed to delete user") });
+    res.status(500).json({ error: "🚫 " + (error.message || "Failed to delete Venue") });
   }
 }
 // Updating Venue
@@ -108,13 +108,13 @@ export const updateVenue = async (req: Request, res: Response) => {
     res.status(400).json({ error: "🚫 Invalid venue ID" });
     return;
   }
-  const { name, address, capacity , createdAt} = req.body;
-  if (!name || !address || !capacity  || !createdAt) {
+  const { name, address, capacity} = req.body;
+  if (!name || !address || !capacity  ) {
     res.status(400).json({ error: "⚠️ All fields are required" });
     return;
   }
   try {
-    const result = await updateVenueServices(venueId, { name, address, capacity , createdAt });
+    const result = await updateVenueServices(venueId, { name, address, capacity });
     res.status(200).json({ message: "✅ " + result });
   } catch (error: any) {
     res.status(500).json({ error: "🚫 " + (error.message || "Failed to update venue") });

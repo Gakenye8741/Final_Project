@@ -3,6 +3,15 @@ GET http://localhost:5000/
 
 ###
 GET http://localhost:5000/api/users
+Author
+###
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{ 
+   "email": "admin@example.com",
+   "password": "password123"
+}
 
 ###
 DELETE http://localhost:5000/api/users/13
@@ -21,13 +30,14 @@ GET http://localhost:5000/api/users-search?lastName=u
 GET http://localhost:5000/api/tickets/2/details
 
 ###
-GET http://localhost:5000/api/venues/4
+GET http://localhost:5000/api/venues
 
 ###
 GET http://localhost:5000/api/venues/search?name=GA
 
 ###
-GET http://localhost:5000/api/details/venues/search?name=
+GET http://localhost:5000/api/details/venues/search?name=g
+
 
 ###
 DELETE http://localhost:5000/api/venues/4ererw
@@ -107,6 +117,8 @@ Content-Type: application/json
   "email": "codewithgakenye1@gmail.com",
   "password": "password3" 
 }
+
+# Create a new user
 
 
 

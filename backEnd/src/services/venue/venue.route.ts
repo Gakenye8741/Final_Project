@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { CreateVenue, DeleteVenue, GetAllVenues, getVenueByName, searchVenue, updateVenue, venueDetails } from "./venue.controller";
+import { adminAuth, anyAuthenticatedUser } from "../../middleware/bearAuth";
 
 
 export const venueRoute = Router();
@@ -9,19 +10,19 @@ export const venueRoute = Router();
 venueRoute.get("/venues/search", searchVenue);
 
 // Get All Venues
-venueRoute.get('/venues', GetAllVenues)
+venueRoute.get('/venues' ,anyAuthenticatedUser, GetAllVenues)
 
 // Get Venue By Name
-venueRoute.get('/venues/:name', getVenueByName)
+venueRoute.get('/venues/:name',adminAuth, getVenueByName)
 
-//Get All Venue details
-venueRoute.get('/details/venues/:name', venueDetails)
+//Get All Venue details through searching
+venueRoute.get('/details/venues/search',adminAuth, venueDetails)
 
-// // Create a new user
-venueRoute.post("/venues", CreateVenue);
+// // Create a new venue
+venueRoute.post("/venues",adminAuth, CreateVenue);
 
-// Update an existing user
-venueRoute.put("/venues/:userId", updateVenue);
+// Update an existing venue
+venueRoute.put("/venues/:id",adminAuth, updateVenue);
 
-// Delete an existing user
-venueRoute.delete("/venues/:id", DeleteVenue);
+// Delete an existing venue
+venueRoute.delete("/venues/:id",adminAuth, DeleteVenue);

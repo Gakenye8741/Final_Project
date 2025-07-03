@@ -8,6 +8,7 @@ import {
   updateEvent,
   deleteEvent,
 } from "./events.controller"; 
+import { adminAuth, anyAuthenticatedUser } from "../../middleware/bearAuth";
 
 export const eventRouter = Router();
 
@@ -23,14 +24,14 @@ eventRouter.get("/events-search-category", getEventsByCategory);
 eventRouter.get("/events", getAllEvents);
 
 // Get event by ID
-eventRouter.get("/events/:id", getEventById);
+eventRouter.get("/events/:id",anyAuthenticatedUser, getEventById);
 
 // Create a new event
-eventRouter.post("/events", createEvent);
+eventRouter.post("/events",adminAuth, createEvent);
 
 // Update an existing event
 
-eventRouter.put("/events/:eventId", updateEvent);
+eventRouter.put("/events/:id",adminAuth, updateEvent);
 
 // Delete an existing event
 eventRouter.delete("/events/:id", deleteEvent);

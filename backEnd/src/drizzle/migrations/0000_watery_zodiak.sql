@@ -8,9 +8,9 @@ CREATE TABLE "bookings" (
 	"eventId" integer,
 	"quantity" integer NOT NULL,
 	"totalAmount" numeric(10, 2) NOT NULL,
-	"bookingStatus" "bookingStatus" DEFAULT 'Pending',
-	"createdAt" timestamp DEFAULT now(),
-	"updatedAt" timestamp DEFAULT now()
+	"bookingStatus" "bookingStatus" DEFAULT 'Pending' NOT NULL,
+	"createdAt" timestamp DEFAULT now() NOT NULL,
+	"updatedAt" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "events" (
@@ -24,20 +24,20 @@ CREATE TABLE "events" (
 	"ticketPrice" numeric(10, 2) NOT NULL,
 	"ticketsTotal" integer NOT NULL,
 	"ticketsSold" integer DEFAULT 0,
-	"createdAt" timestamp DEFAULT now(),
-	"updatedAt" timestamp DEFAULT now()
+	"createdAt" timestamp DEFAULT now() NOT NULL,
+	"updatedAt" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "payments" (
 	"paymentId" serial PRIMARY KEY NOT NULL,
 	"bookingId" integer,
 	"amount" numeric(10, 2) NOT NULL,
-	"paymentStatus" "paymentStatus" DEFAULT 'Pending',
-	"paymentDate" timestamp DEFAULT now(),
+	"paymentStatus" "paymentStatus" DEFAULT 'Pending' NOT NULL,
+	"paymentDate" timestamp DEFAULT now() NOT NULL,
 	"paymentMethod" varchar(50),
 	"transactionId" varchar(255),
-	"createdAt" timestamp DEFAULT now(),
-	"updatedAt" timestamp DEFAULT now()
+	"createdAt" timestamp DEFAULT now() NOT NULL,
+	"updatedAt" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "supportTickets" (
@@ -45,22 +45,22 @@ CREATE TABLE "supportTickets" (
 	"userId" integer,
 	"subject" varchar(255) NOT NULL,
 	"description" text NOT NULL,
-	"status" "status" DEFAULT 'Open',
-	"createdAt" timestamp DEFAULT now(),
-	"updatedAt" timestamp DEFAULT now()
+	"status" "status" DEFAULT 'Open' NOT NULL,
+	"createdAt" timestamp DEFAULT now() NOT NULL,
+	"updatedAt" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "users" (
 	"userId" serial PRIMARY KEY NOT NULL,
-	"firstName" varchar(100) NOT NULL,
-	"lastName" varchar(100) NOT NULL,
+	"firstName" varchar(15) NOT NULL,
+	"lastName" varchar(15) NOT NULL,
 	"email" varchar(255) NOT NULL,
 	"password" text NOT NULL,
-	"contactPhone" varchar(20),
+	"contactPhone" varchar(15),
 	"address" text,
-	"role" "role" DEFAULT 'user',
-	"createdAt" timestamp DEFAULT now(),
-	"updatedAt" timestamp DEFAULT now(),
+	"role" "role" DEFAULT 'user' NOT NULL,
+	"createdAt" timestamp DEFAULT now() NOT NULL,
+	"updatedAt" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
@@ -69,7 +69,7 @@ CREATE TABLE "venues" (
 	"name" varchar(255) NOT NULL,
 	"address" text NOT NULL,
 	"capacity" integer NOT NULL,
-	"createdAt" timestamp DEFAULT now()
+	"createdAt" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 ALTER TABLE "bookings" ADD CONSTRAINT "bookings_userId_users_userId_fk" FOREIGN KEY ("userId") REFERENCES "public"."users"("userId") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
