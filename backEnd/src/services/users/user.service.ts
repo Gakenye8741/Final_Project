@@ -11,35 +11,46 @@ import {
   TSelectUser,
 } from "../../drizzle/schema";
 
-// Get all users
-export const getAllUsersService = async (): Promise<TSelectUser[]> => {
-  return await db.query.users.findMany({
-    orderBy: [desc(users.userId)],
+// Utility: Exclude password from returned user objects
+function excludePassword<T extends { password?: string }>(user: T): Omit<T, "password"> {
+  const { password, ...rest } = user;
+  return rest;
+}
+
+// ✅ Get all users (ordered by nationalId) without password
+export const getAllUsersService = async (): Promise<Omit<TSelectUser, "password">[]> => {
+  const usersList = await db.query.users.findMany({
+    orderBy: [desc(users.nationalId)],
   });
+  return usersList.map(excludePassword);
 };
 
-// Get user by ID
-export const getUserByIdService = async (
-  userId: number
-): Promise<TSelectUser | undefined> => {
-  return await db.query.users.findFirst({
-    where: eq(users.userId, userId),
-  });
-};
-
-// Get user by last name (case-insensitive, partial match)
+// ✅ Get user by last name (case-insensitive, partial match) without password
 export const getUserByLastNameService = async (
   lastName: string
-): Promise<TSelectUser[]> => {
-  return await db.query.users.findMany({
+): Promise<Omit<TSelectUser, "password">[]> => {
+  const results = await db.query.users.findMany({
     where: ilike(users.lastName, `%${lastName}%`),
   });
+  return results.map(excludePassword);
 };
 
-// Get full user profile with all related data
-export const getUserWithDetailsService = async (userId: number) => {
-  return await db.query.users.findFirst({
-    where: eq(users.userId, userId),
+// ✅ Get user by nationalId without password
+export const getUserByNationalIdService = async (
+  nationalId: number
+): Promise<Omit<TSelectUser, "password"> | undefined> => {
+  const user = await db.query.users.findFirst({
+    where: eq(users.nationalId, nationalId),
+  });
+  return user ? excludePassword(user) : undefined;
+};
+
+// ✅ Get full user profile with all related data using nationalId (excluding password)
+export const getUserWithDetailsService = async (
+  nationalId: number
+) => {
+  const userDetails = await db.query.users.findFirst({
+    where: eq(users.nationalId, nationalId),
     with: {
       bookings: {
         with: {
@@ -54,9 +65,39 @@ export const getUserWithDetailsService = async (userId: number) => {
       supportTickets: true,
     },
   });
+
+  if (!userDetails) return undefined;
+
+  const { password, ...safeDetails } = userDetails;
+  return safeDetails;
 };
 
-// Create a new user
+// ✅ Search users with details using last name (excluding password)
+export const searchUsersWithDetailsService = async (
+  query: string
+) => {
+  const matchedUsers = await db.query.users.findMany({
+    where: ilike(users.lastName, `%${query}%`),
+    with: {
+      bookings: {
+        with: {
+          event: {
+            with: {
+              venue: true,
+            },
+          },
+          payments: true,
+        },
+      },
+      supportTickets: true,
+    },
+    orderBy: [desc(users.nationalId)],
+  });
+
+  return matchedUsers.map(({ password, ...rest }) => rest);
+};
+
+// ✅ Create a new user
 export const createUserService = async (
   user: TInsertUser
 ): Promise<string> => {
@@ -64,17 +105,19 @@ export const createUserService = async (
   return "User created successfully ✅";
 };
 
-// Update an existing user
+// ✅ Update an existing user by nationalId
 export const updateUserService = async (
-  userId: number,
+  nationalId: number,
   user: Partial<TInsertUser>
 ): Promise<string> => {
-  await db.update(users).set(user).where(eq(users.userId, userId));
+  await db.update(users).set(user).where(eq(users.nationalId, nationalId));
   return "User updated successfully 🔄";
 };
 
-// Delete user by ID
-export const deleteUserService = async (userId: number): Promise<string> => {
-  await db.delete(users).where(eq(users.userId, userId));
+// ✅ Delete user by nationalId
+export const deleteUserService = async (
+  nationalId: number
+): Promise<string> => {
+  await db.delete(users).where(eq(users.nationalId, nationalId));
   return "User deleted successfully ❌";
 };

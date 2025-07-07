@@ -1,9 +1,20 @@
 ###
-GET http://localhost:5000/
+GET http://localhost:5000/api/users/12345678/details
 
 ###
-GET http://localhost:5000/api/users
-Author
+GET http://localhost:5000/api/details/users-search?q=smith
+
+###
+GET http://localhost:5000/api/details/users-search?q=smith
+
+###
+GET http://localhost:5000/api/bookings/user/national-id/11223344
+###
+GET http://localhost:5000/api/payments
+###
+GET http://localhost:5000/api/bookings
+
+
 ###
 POST http://localhost:5000/api/auth/login
 Content-Type: application/json
@@ -12,7 +23,10 @@ Content-Type: application/json
    "email": "admin@example.com",
    "password": "password123"
 }
-
+###
+GET http://localhost:5000/api/users/21890879
+###
+GET http://localhost:5000/api/users/21890879/details
 ###
 DELETE http://localhost:5000/api/users/13
 
@@ -100,6 +114,7 @@ POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
+  "nationalId": 21890879,
   "firstName": "Brian",
   "lastName": "Gakenye",
   "email": "codewithgakenye@gmail.com",

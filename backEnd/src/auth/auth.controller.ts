@@ -26,7 +26,7 @@ export const registerUser = async (req: Request, res: Response) => {
     const result = registerSchema.safeParse(req.body);
     if (!result.success) {
       res.status(400).json({ error: result.error.issues });
-      return
+      return;
     }
 
     const user = result.data;
@@ -34,7 +34,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
     if (existingUser) {
       res.status(400).json({ error: "User with this email already exists" });
-      return
+      return;
     }
 
     const salt = bcrypt.genSaltSync(10);
@@ -68,8 +68,8 @@ export const loginUser = async (req: Request, res: Response) => {
   try {
     const result = loginSchema.safeParse(req.body);
     if (!result.success) {
-       res.status(400).json({ error: result.error.issues });
-       return
+      res.status(400).json({ error: result.error.issues });
+      return;
     }
 
     const { email, password } = result.data;
@@ -77,17 +77,17 @@ export const loginUser = async (req: Request, res: Response) => {
 
     if (!user) {
       res.status(404).json({ error: "User not found" });
-      return
+      return;
     }
 
     const isMatch = bcrypt.compareSync(password, user.password);
     if (!isMatch) {
-       res.status(401).json({ error: "Invalid password" });
-       return
+      res.status(401).json({ error: "Invalid password" });
+      return;
     }
 
     const payload = {
-      userId: user.userId,
+      nationalId: user.nationalId,
       email: user.email,
       role: user.role,
       firstName: user.firstName,
@@ -115,19 +115,20 @@ export const passwordReset = async (req: Request, res: Response) => {
     const result = passwordResetRequestSchema.safeParse(req.body);
     if (!result.success) {
       res.status(400).json({ error: result.error.issues });
-      return
+      return;
     }
 
     const { email } = result.data;
     const user = await getUserByEmailService(email);
 
+    // Always respond the same for security reasons
     if (!user) {
       res.status(200).json({ message: "If an account exists, a reset link has been sent." });
-      return
+      return;
     }
 
     const resetToken = jwt.sign(
-      { userId: user.userId, purpose: "password_reset" },
+      { nationalId: user.nationalId, purpose: "password_reset" },
       process.env.JWT_SECRET as string,
       { expiresIn: "1h" }
     );
@@ -144,7 +145,7 @@ export const passwordReset = async (req: Request, res: Response) => {
 
     if (!results) {
       res.status(500).json({ error: "Failed to send reset email" });
-      return 
+      return;
     }
 
     res.status(200).json({
@@ -163,8 +164,8 @@ export const updatePassword = async (req: Request, res: Response) => {
     const result = passwordUpdateSchema.safeParse(req.body);
 
     if (!result.success) {
-     res.status(400).json({ error: result.error.issues });
-     return
+      res.status(400).json({ error: result.error.issues });
+      return;
     }
 
     const { newPassword } = result.data;
@@ -172,14 +173,14 @@ export const updatePassword = async (req: Request, res: Response) => {
     const payload: any = jwt.verify(token, process.env.JWT_SECRET as string);
 
     if (payload.purpose !== "password_reset") {
-       res.status(400).json({ error: "Invalid token purpose" });
-       return
+      res.status(400).json({ error: "Invalid token purpose" });
+      return;
     }
 
-    const user = await getUserByIdService(payload.userId);
+    const user = await getUserByIdService(payload.nationalId);
     if (!user) {
-       res.status(404).json({ error: "User not found" });
-       return
+      res.status(404).json({ error: "User not found" });
+      return;
     }
 
     const hashed = bcrypt.hashSync(newPassword, 10);
@@ -196,12 +197,12 @@ export const updatePassword = async (req: Request, res: Response) => {
     res.status(200).json({ message: "Password updated successfully" });
   } catch (error: any) {
     if (error instanceof jwt.TokenExpiredError) {
-       res.status(401).json({ error: "Token expired" });
-       return
+      res.status(401).json({ error: "Token expired" });
+      return;
     }
     if (error instanceof jwt.JsonWebTokenError) {
       res.status(401).json({ error: "Invalid token" });
-      return
+      return;
     }
     res.status(500).json({ error: error.message || "Password update failed" });
   }
@@ -214,27 +215,27 @@ export const verifyEmail = async (req: Request, res: Response) => {
     const payload: any = jwt.verify(token, process.env.JWT_SECRET as string);
 
     if (payload.purpose !== "email_verification") {
-     res.status(400).json({ error: "Invalid token purpose" });
-     return
+      res.status(400).json({ error: "Invalid token purpose" });
+      return;
     }
 
-    const user = await getUserByIdService(payload.userId);
+    const user = await getUserByIdService(payload.nationalId);
     if (!user) {
       res.status(404).json({ error: "User not found" });
-      return 
+      return;
     }
 
-    // await verifyUserEmailService(user.userId);
+    // await verifyUserEmailService(user.nationalId);
 
     res.status(200).json({ message: "Email verified successfully" });
   } catch (error: any) {
     if (error instanceof jwt.TokenExpiredError) {
-     res.status(401).json({ error: "Verification link expired" });
-     return
+      res.status(401).json({ error: "Verification link expired" });
+      return;
     }
     if (error instanceof jwt.JsonWebTokenError) {
       res.status(401).json({ error: "Invalid token" });
-      return
+      return;
     }
     res.status(500).json({ error: error.message || "Failed to verify email" });
   }

@@ -1,38 +1,37 @@
-// routes/booking.routes.ts
-
 import { Router } from "express";
 import {
   getAllBookings,
   getBookingById,
-  getBookingsByUserId,
+  getBookingsByUserNationalId, // 🔄 Updated to use national ID
   getBookingsByEventId,
   createBooking,
   updateBooking,
   deleteBooking,
-} from "./bookings.controller"; 
+} from "./bookings.controller";
+
 import { adminAuth, anyAuthenticatedUser } from "../../middleware/bearAuth";
 
 export const bookingRouter = Router();
 
-// Booking routes definition
+// 📦 Booking Routes
 
-// Get all bookings
-bookingRouter.get("/bookings",adminAuth, getAllBookings);
+// 📋 Get all bookings (Admin only)
+bookingRouter.get("/bookings",getAllBookings);
 
-// Get booking by ID
-bookingRouter.get("/bookings/:id",adminAuth, getBookingById);
+// 🔍 Get booking by ID (Admin only)
+bookingRouter.get("/bookings/:id", adminAuth, getBookingById);
 
-// Get all bookings for a specific user
-bookingRouter.get("/bookings/user/:userId",anyAuthenticatedUser, getBookingsByUserId);
+// 👤 Get bookings by user national ID (Authenticated user)
+bookingRouter.get("/bookings/user/national-id/:nationalId", getBookingsByUserNationalId);
 
-// Get all bookings for a specific event
-bookingRouter.get("/bookings/event/:eventId",adminAuth, getBookingsByEventId);
+// 🎟️ Get bookings by event ID (Admin only)
+bookingRouter.get("/bookings/event/:eventId", adminAuth, getBookingsByEventId);
 
-// Create a new booking
-bookingRouter.post("/bookings",anyAuthenticatedUser,createBooking);
+// ➕ Create a new booking (Authenticated user)
+bookingRouter.post("/bookings", anyAuthenticatedUser, createBooking);
 
-// Update an existing booking
-bookingRouter.put("/bookings/:id",anyAuthenticatedUser ,updateBooking);
+// 📝 Update an existing booking (Authenticated user)
+bookingRouter.put("/bookings/:id", anyAuthenticatedUser, updateBooking);
 
-// Delete an existing booking
-bookingRouter.delete("/bookings/:id",anyAuthenticatedUser, deleteBooking);
+// 🗑️ Delete a booking (Authenticated user)
+bookingRouter.delete("/bookings/:id", anyAuthenticatedUser, deleteBooking);

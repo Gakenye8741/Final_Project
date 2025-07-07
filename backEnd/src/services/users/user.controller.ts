@@ -3,10 +3,11 @@ import {
   createUserService,
   deleteUserService,
   getAllUsersService,
-  getUserByIdService,
   getUserByLastNameService,
+  getUserByNationalIdService,
   getUserWithDetailsService,
-  updateUserService
+  updateUserService,
+  searchUsersWithDetailsService,
 } from "./user.service";
 
 // Get all users
@@ -15,28 +16,28 @@ export const getUsers = async (req: Request, res: Response) => {
     const allUsers = await getAllUsersService();
     if (!allUsers || allUsers.length === 0) {
       res.status(404).json({ message: "No users found" });
-    } else {
-      res.status(200).json(allUsers);
+      return;
     }
+    res.status(200).json(allUsers);
   } catch (error: any) {
     res.status(500).json({ error: error.message || "Failed to fetch users" });
   }
 };
 
-// Get user by ID
-export const getUserById = async (req: Request, res: Response) => {
-  const userId = parseInt(req.params.id);
-  if (isNaN(userId)) {
-    res.status(400).json({ error: "Invalid user ID" });
+// Get user by nationalId
+export const getUserByNationalId = async (req: Request, res: Response) => {
+  const nationalId = parseInt(req.params.nationalId);
+  if (isNaN(nationalId)) {
+    res.status(400).json({ error: "Invalid national ID" });
     return;
   }
   try {
-    const user = await getUserByIdService(userId);
+    const user = await getUserByNationalIdService(nationalId);
     if (!user) {
-      res.status(404).json({ message: "User not found" });
-    } else {
-      res.status(200).json(user);
+      res.status(404).json({ message: "User not found" }); 
+      return;
     }
+    res.status(200).json(user);
   } catch (error: any) {
     res.status(500).json({ error: error.message || "Failed to fetch user" });
   }
@@ -46,87 +47,113 @@ export const getUserById = async (req: Request, res: Response) => {
 export const getUserByLastName = async (req: Request, res: Response) => {
   const lastName = req.query.lastName as string;
 
-    if (!lastName) {
-         res.status(400).json({ error: "Missing lastName query parameter" });
-         return;
-    }
-
-    try {
-        const users = await getUserByLastNameService(lastName);
-        if (!users || users.length === 0) {
-             res.status(404).json({ message: "No users found with that last name" });
-             return;
-        }
-
-        res.status(200).json(users);
-    } catch (error: any) {
-        res.status(500).json({ error: error.message || "Error searching users" });
-    }
-};
-
-// Get full user profile with all related data
-export const getUserDetails = async (req: Request, res: Response) => {
-  const userId = parseInt(req.params.id);
-  if (isNaN(userId)) {
-    res.status(400).json({ error: "Invalid user ID" });
+  if (!lastName) {
+    res.status(400).json({ error: "Missing lastName query parameter" });
     return;
   }
+
   try {
-    const userDetails = await getUserWithDetailsService(userId);
+    const users = await getUserByLastNameService(lastName);
+    if (!users || users.length === 0) {
+      res.status(404).json({ message: "No users found with that last name" });
+      return;
+    }
+
+    res.status(200).json(users);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || "Error searching users" });
+  }
+};
+
+// Get full user profile with all related data using nationalId
+export const getUserDetails = async (req: Request, res: Response) => {
+  const nationalId = parseInt(req.params.nationalId);
+  if (isNaN(nationalId)) {
+    res.status(400).json({ error: "Invalid national ID" });
+     return;
+  }
+
+  try {
+    const userDetails = await getUserWithDetailsService(nationalId);
     if (!userDetails) {
       res.status(404).json({ message: "User not found" });
-    } else {
-      res.status(200).json(userDetails);
+      return;
     }
+    res.status(200).json(userDetails);
   } catch (error: any) {
     res.status(500).json({ error: error.message || "Failed to fetch user details" });
   }
 };
 
+// 🔍 Search all users with details using last name
+export const searchUsersWithDetails = async (req: Request, res: Response) => {
+  const query = req.query.q as string;
+
+  if (!query) {
+     res.status(400).json({ error: "Missing search query parameter" });
+     return;
+  }
+
+  try {
+    const users = await searchUsersWithDetailsService(query);
+    if (!users || users.length === 0) {
+      res.status(404).json({ message: "No matching users found" });
+      return;
+    }
+    res.status(200).json(users);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || "Failed to search users" });
+  }
+};
+
 // Create new user
 export const createUser = async (req: Request, res: Response) => {
-  const { firstName, lastName, email, password } = req.body;
-  if (!firstName || !lastName || !email || !password) {
-    res.status(400).json({ error: "All fields are required" });
+  const { firstName, lastName, email, password, nationalId } = req.body;
+  if (!firstName || !lastName || !email || !password || !nationalId) {
+    res.status(400).json({ error: "All fields are required" });  
     return;
   }
+
   try {
-    const result = await createUserService({ firstName, lastName, email, password });
+    const result = await createUserService({ firstName, lastName, email, password, nationalId });
     res.status(201).json({ message: result });
   } catch (error: any) {
     res.status(500).json({ error: error.message || "Failed to create user" });
   }
 };
 
-// Update user
+// Update user by nationalId
 export const updateUser = async (req: Request, res: Response) => {
-  const userId = parseInt(req.params.id);
-  if (isNaN(userId)) {
-    res.status(400).json({ error: "Invalid user ID" });
+  const nationalId = parseInt(req.params.nationalId);
+  if (isNaN(nationalId)) {
+    res.status(400).json({ error: "Invalid national ID" });
     return;
   }
+
   const { firstName, lastName, email, password } = req.body;
   if (!firstName || !lastName || !email || !password) {
     res.status(400).json({ error: "All fields are required" });
     return;
   }
+
   try {
-    const result = await updateUserService(userId, { firstName, lastName, email, password });
+    const result = await updateUserService(nationalId, { firstName, lastName, email, password });
     res.status(200).json({ message: result });
   } catch (error: any) {
     res.status(500).json({ error: error.message || "Failed to update user" });
   }
 };
 
-// Delete user
+// Delete user by nationalId
 export const deleteUser = async (req: Request, res: Response) => {
-  const userId = parseInt(req.params.id);
-  if (isNaN(userId)) {
-    res.status(400).json({ error: "Invalid user ID" });
+  const nationalId = parseInt(req.params.nationalId);
+  if (isNaN(nationalId)) {
+    res.status(400).json({ error: "Invalid national ID" });
     return;
   }
+
   try {
-    const result = await deleteUserService(userId);
+    const result = await deleteUserService(nationalId);
     res.status(200).json({ message: result });
   } catch (error: any) {
     res.status(500).json({ error: error.message || "Failed to delete user" });

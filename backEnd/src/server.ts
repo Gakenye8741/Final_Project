@@ -2,6 +2,7 @@
 
 import express, { Application, Response } from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import { logger } from './middleware/logger';
 import { userRouter } from './services/users/user.route';
 import { TicketsRoute } from './services/tickets/ticket.route';
@@ -11,7 +12,7 @@ import { bookingRouter } from './services/bookings/bookings.route';
 import { paymentRouter } from './services/payments/payments.route';
 import { authRouter } from './auth/auth.route';
 import { rateLimiterMiddleware } from './middleware/rate-limiter';
-// import userRoute from './services/users/user.route';
+
 
 dotenv.config();
 
@@ -20,8 +21,8 @@ const PORT = process.env.PORT || 5000;
 
 // ✅ Middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(logger); // custom logger middleware
+app.use(cors())
 
 
 // Rate Limiter Middleware

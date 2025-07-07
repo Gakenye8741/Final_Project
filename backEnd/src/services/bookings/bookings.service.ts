@@ -1,5 +1,3 @@
-
-
 import { eq, desc } from "drizzle-orm";
 import db from "../../drizzle/db";
 import {
@@ -38,14 +36,15 @@ export const getBookingByIdService = async (
   });
 };
 
-// Get bookings by User ID
-export const getBookingsByUserIdService = async (
-  userId: number
+// ✅ Get bookings by User National ID
+export const getBookingsByUserNationalIdService = async (
+  nationalId: number
 ): Promise<TSelectBooking[]> => {
   return await db.query.bookings.findMany({
-    where: eq(bookings.userId, userId),
+    where: eq(bookings.nationalId, nationalId),
     orderBy: [desc(bookings.createdAt)],
     with: {
+      user: true,
       event: true,
       payments: true,
     },

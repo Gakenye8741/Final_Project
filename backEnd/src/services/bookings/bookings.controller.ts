@@ -1,10 +1,8 @@
-// controllers/booking.controller.ts
-
 import { Request, Response } from "express";
 import {
   getAllBookingsService,
   getBookingByIdService,
-  getBookingsByUserIdService,
+  getBookingsByUserNationalIdService,
   getBookingsByEventIdService,
   createBookingService,
   updateBookingService,
@@ -44,22 +42,23 @@ export const getBookingById = async (req: Request, res: Response) => {
   }
 };
 
-// Get bookings by User ID
-export const getBookingsByUserId = async (req: Request, res: Response) => {
-  const userId = parseInt(req.params.userId);
-  if (isNaN(userId)) {
-    res.status(400).json({ error: "🚫 Invalid user ID" });
+// ✅ Get bookings by User National ID
+export const getBookingsByUserNationalId = async (req: Request, res: Response) => {
+  const nationalId = parseInt(req.params.nationalId);
+  if (isNaN(nationalId)) {
+    res.status(400).json({ error: "🚫 Invalid national ID" });
     return;
   }
+
   try {
-    const bookings = await getBookingsByUserIdService(userId);
+    const bookings = await getBookingsByUserNationalIdService(nationalId);
     if (!bookings || bookings.length === 0) {
-      res.status(404).json({ message: `🔍 No bookings found for user ID ${userId}` });
+      res.status(404).json({ message: `🔍 No bookings found for national ID ${nationalId}` });
     } else {
       res.status(200).json(bookings);
     }
   } catch (error: any) {
-    res.status(500).json({ error: "🚫 " + (error.message || `Failed to retrieve bookings for user ID ${userId}`) });
+    res.status(500).json({ error: "🚫 " + (error.message || `Failed to retrieve bookings for national ID ${nationalId}`) });
   }
 };
 
@@ -81,7 +80,6 @@ export const getBookingsByEventId = async (req: Request, res: Response) => {
     res.status(500).json({ error: "🚫 " + (error.message || `Failed to retrieve bookings for event ID ${eventId}`) });
   }
 };
-
 
 // Create new booking
 export const createBooking = async (req: Request, res: Response) => {

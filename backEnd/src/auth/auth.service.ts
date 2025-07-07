@@ -2,13 +2,14 @@ import { eq } from "drizzle-orm";
 import db from "../drizzle/db";
 import { users } from "../drizzle/schema";
 import bcrypt from "bcrypt";
-import { RegisterInput, LoginInput } from "../validators/user.validator";
-import { TInsertUser, TSelectUser } from "../drizzle/schema";
+import { RegisterInput } from "../validators/user.validator";
+import { TSelectUser } from "../drizzle/schema";
 
 export const createUserServices = async (userData: RegisterInput): Promise<TSelectUser> => {
   try {
     const result = await db.insert(users)
       .values({
+        nationalId: userData.nationalId,
         firstName: userData.firstName,
         lastName: userData.lastName,
         email: userData.email,
@@ -36,14 +37,14 @@ export const getUserByEmailService = async (email: string): Promise<TSelectUser 
   }
 };
 
-export const getUserByIdService = async (userId: number): Promise<TSelectUser | undefined> => {
+export const getUserByIdService = async (nationalId: number): Promise<TSelectUser | undefined> => {
   try {
     const result = await db.query.users.findFirst({
-      where: eq(users.userId, userId)
+      where: eq(users.nationalId, nationalId)
     });
     return result || undefined;
   } catch (error) {
-    throw new Error(`Failed to get user by ID: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(`Failed to get user by nationalId: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
 
@@ -86,7 +87,7 @@ export const verifyUserCredentials = async (email: string, password: string): Pr
 };
 
 export const updateUserProfileService = async (
-  userId: number, 
+  nationalId: number,
   updateData: {
     firstName?: string;
     lastName?: string;
@@ -100,7 +101,7 @@ export const updateUserProfileService = async (
         ...updateData,
         updatedAt: new Date()
       })
-      .where(eq(users.userId, userId))
+      .where(eq(users.nationalId, nationalId))
       .returning();
     
     if (!result[0]) {

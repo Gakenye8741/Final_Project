@@ -1,14 +1,14 @@
 import {
   pgTable,
   serial,
+  integer,
   varchar,
   text,
   timestamp,
-  integer,
   decimal,
-  pgEnum,
   date,
   time,
+  pgEnum,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -20,7 +20,7 @@ export const ticketStatusEnum = pgEnum("status", ["Open", "In Progress", "Resolv
 
 // USERS
 export const users = pgTable("users", {
-  userId: serial("userId").primaryKey(),
+  nationalId: integer("nationalId").primaryKey(), // updated to integer
   firstName: varchar("firstName", { length: 15 }).notNull(),
   lastName: varchar("lastName", { length: 15 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
@@ -60,7 +60,7 @@ export const events = pgTable("events", {
 // BOOKINGS
 export const bookings = pgTable("bookings", {
   bookingId: serial("bookingId").primaryKey(),
-  userId: integer("userId").references(() => users.userId, { onDelete: "cascade" }),
+  nationalId: integer("nationalId").references(() => users.nationalId, { onDelete: "cascade" }), // updated to integer
   eventId: integer("eventId").references(() => events.eventId, { onDelete: "cascade" }),
   quantity: integer("quantity").notNull(),
   totalAmount: decimal("totalAmount", { precision: 10, scale: 2 }).notNull(),
@@ -85,14 +85,13 @@ export const payments = pgTable("payments", {
 // SUPPORT TICKETS
 export const supportTickets = pgTable("supportTickets", {
   ticketId: serial("ticketId").primaryKey(),
-  userId: integer("userId").references(() => users.userId, { onDelete: "cascade" }),
+  nationalId: integer("nationalId").references(() => users.nationalId, { onDelete: "cascade" }), // updated to integer
   subject: varchar("subject", { length: 255 }).notNull(),
   description: text("description").notNull(),
   status: ticketStatusEnum("status").default("Open").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
-
 
 // RELATIONS
 export const usersRelations = relations(users, ({ many }) => ({
@@ -114,8 +113,8 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
 
 export const bookingsRelations = relations(bookings, ({ one, many }) => ({
   user: one(users, {
-    fields: [bookings.userId],
-    references: [users.userId],
+    fields: [bookings.nationalId],
+    references: [users.nationalId],
   }),
   event: one(events, {
     fields: [bookings.eventId],
@@ -133,11 +132,10 @@ export const paymentsRelations = relations(payments, ({ one }) => ({
 
 export const supportTicketsRelations = relations(supportTickets, ({ one }) => ({
   user: one(users, {
-    fields: [supportTickets.userId],
-    references: [users.userId],
+    fields: [supportTickets.nationalId],
+    references: [users.nationalId],
   }),
 }));
-
 
 // INFERRED TYPES
 export type TSelectUser = typeof users.$inferSelect;
