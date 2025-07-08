@@ -20,7 +20,7 @@ export const ticketStatusEnum = pgEnum("status", ["Open", "In Progress", "Resolv
 
 // USERS
 export const users = pgTable("users", {
-  nationalId: integer("nationalId").primaryKey(), // updated to integer
+  nationalId: integer("nationalId").primaryKey(), 
   firstName: varchar("firstName", { length: 15 }).notNull(),
   lastName: varchar("lastName", { length: 15 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),

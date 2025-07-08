@@ -1,98 +1,97 @@
-import React, { useState } from "react";
-
-type Venue = {
-  id: number;
-  name: string;
-  county: string;
-  location: string;
-  image: string;
-  status: "Available" | "Booked";
-};
-
-const initialVenues: Venue[] = [
-  {
-    id: 1,
-    name: "KICC Convention Centre",
-    county: "Nairobi",
-    location: "Harambee Avenue, Nairobi",
-    image: "https://images.unsplash.com/photo-1600585152914-698b9aeada2e",
-    status: "Available",
-  },
-  {
-    id: 2,
-    name: "Mombasa Beach Arena",
-    county: "Mombasa",
-    location: "Nyali Beachfront, Mombasa",
-    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
-    status: "Booked",
-  },
-  {
-    id: 3,
-    name: "Eldoret Sports Grounds",
-    county: "Uasin Gishu",
-    location: "Eldoret CBD",
-    image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
-    status: "Available",
-  },
-  {
-    id: 4,
-    name: "Kisumu Peace Hall",
-    county: "Kisumu",
-    location: "Oginga Odinga Street",
-    image: "https://images.unsplash.com/photo-1564866657311-e9cc905d29b2",
-    status: "Booked",
-  },
-];
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { venueApi } from "../../features/APIS/VenueApi";
+import { PuffLoader } from "react-spinners";
 
 export const VenueList: React.FC = () => {
-  const [venues] = useState(initialVenues);
+  const navigate = useNavigate();
+
+  const {
+    data: venues = [],
+    isLoading,
+    error,
+  } = venueApi.useGetAllVenuesQuery({
+    pollingInterval: 3000,
+  });
+
+  const displayedVenues = venues.slice(0, 3);
 
   return (
-    <section className="p-8">
-      <h2 className="text-3xl font-bold mb-6 text-center">Event Venues in Kenya</h2>
+    <section className="min-h-screen py-16 px-6 bg-gradient-to-br from-gray-900 via-gray-950 to-black text-white">
+      <div className="max-w-7xl mx-auto">
+        {/* Heading */}
+        <h2 className="text-4xl font-extrabold text-center text-emerald-400 mb-6">
+          Top Event Venues in Kenya
+        </h2>
 
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {venues.map((venue) => (
-          <div
-            key={venue.id}
-            className="card w-full bg-base-100 shadow-xl border border-base-200"
-          >
-            <figure>
-              <img
-                src={venue.image}
-                alt={venue.name}
-                className="h-52 w-full object-cover"
-              />
-            </figure>
-            <div className="card-body">
-              <h3 className="card-title text-lg">{venue.name}</h3>
-              <p className="text-sm text-gray-500">{venue.location}</p>
-              <div className="badge badge-outline">{venue.county}</div>
-              <div className="mt-2">
-                <span
-                  className={`badge ${
-                    venue.status === "Available"
-                      ? "badge-success"
-                      : "badge-error"
-                  }`}
-                >
-                  {venue.status}
-                </span>
-              </div>
-              <div className="card-actions justify-end mt-4">
+        <p className="text-lg text-slate-300 max-w-3xl mx-auto text-center mb-10">
+          Discover Kenya’s top venues where magic happens. From iconic stadiums
+          to elegant halls, these spaces host unforgettable moments and world-class
+          events. Browse our featured venues below.
+        </p>
+
+        {/* Data States */}
+        {error ? (
+          <div className="text-red-400 text-center text-lg font-semibold">
+            Failed to load venues. Please try again.
+          </div>
+        ) : isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <PuffLoader color="#34d399" />
+          </div>
+        ) : displayedVenues.length === 0 ? (
+          <div className="text-center text-emerald-200 text-lg">No venues available.</div>
+        ) : (
+          <div className="grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {displayedVenues.map((venue: any) => (
+              <div
+                key={venue.venueId}
+                className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl transition-all duration-300 p-6 hover:-translate-y-1 hover:scale-[1.02]"
+              >
+                {/* Venue Info */}
+                <div className="mb-4">
+                  <h3 className="text-2xl font-bold text-emerald-300 mb-1">
+                    {venue.name}
+                  </h3>
+                  <p className="text-slate-400 mb-2 line-clamp-2">{venue.address}</p>
+                </div>
+
+                <div className="text-sm text-slate-400 mb-4 space-y-1">
+                  <p>
+                    <span className="text-white font-medium">Capacity:</span>{" "}
+                    <span className="text-lime-400">{venue.capacity}</span>
+                  </p>
+                  <p>
+                    <span className="text-white font-medium">Venue ID:</span>{" "}
+                    <span className="uppercase tracking-wider text-yellow-300">
+                      {venue.venueId}
+                    </span>
+                  </p>
+                </div>
+
+                {/* View Button */}
                 <button
-                  className={`btn ${
-                    venue.status === "Booked"
-                      ? "btn-disabled"
-                      : "btn-primary"
-                  }`}
+                  onClick={() => navigate(`/venues/${venue.venueId}`)}
+                  className="w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition"
                 >
-                  Book Venue
+                  View Details
                 </button>
               </div>
-            </div>
+            ))}
           </div>
-        ))}
+        )}
+
+        {/* See More Button */}
+        {venues.length > 3 && (
+          <div className="mt-12 text-center">
+            <button
+              onClick={() => navigate("/venues")}
+              className="inline-block px-6 py-3 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition"
+            >
+              See More Venues
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

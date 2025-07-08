@@ -1,5 +1,30 @@
 ###
-GET http://localhost:5000/api/users/12345678/details
+GET http://localhost:5000/api/users
+
+###
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+ {
+    "nationalId": 41436941,
+    "firstName": "Brian",
+    "lastName": "Gakenye",
+    "email": "brayogakenye@gmail.com",
+    "password":"Gakenye123#",
+    "contactPhone": "+25412345678",
+    "address": "50 Nyeri",
+    "role": "admin"
+  
+  }
+
+  
+###
+POST http://localhost:5000/api/events/purchase-by-title/Jazz Night Under the 
+Content-Type: application/json
+
+{
+  "quantity": 6
+}
 
 ###
 GET http://localhost:5000/api/details/users-search?q=smith

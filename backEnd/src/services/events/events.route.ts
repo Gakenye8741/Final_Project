@@ -7,31 +7,25 @@ import {
   createEvent,
   updateEvent,
   deleteEvent,
-} from "./events.controller"; 
+} from "./events.controller";
+
 import { adminAuth, anyAuthenticatedUser } from "../../middleware/bearAuth";
 
 export const eventRouter = Router();
 
-// Event routes definition
-
-// Search events by title 
+// 🔍 Search Events
 eventRouter.get("/events-search-title", getEventsByTitle);
-
-// Search events by category 
 eventRouter.get("/events-search-category", getEventsByCategory);
 
-// Get all events
+// 📥 Get Events
 eventRouter.get("/events", getAllEvents);
+eventRouter.get("/events/:id", getEventById);
 
-// Get event by ID
-eventRouter.get("/events/:id",anyAuthenticatedUser, getEventById);
+// ➕ Create Event (admin only)
+eventRouter.post("/events", adminAuth, createEvent);
 
-// Create a new event
-eventRouter.post("/events",adminAuth, createEvent);
+// 🔄 Update Event (admin only)
+eventRouter.put("/events/:id", adminAuth, updateEvent);
 
-// Update an existing event
-
-eventRouter.put("/events/:id",adminAuth, updateEvent);
-
-// Delete an existing event
-eventRouter.delete("/events/:id", deleteEvent);
+// 🗑️ Delete Event (admin only)
+eventRouter.delete("/events/:id", adminAuth, deleteEvent);

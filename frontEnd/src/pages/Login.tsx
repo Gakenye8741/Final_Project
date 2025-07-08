@@ -26,6 +26,12 @@ const Login = () => {
       console.log(res);
       toast.success('✅ Logged in successfully', { id: loadingToastId });
       Dispatch(setCredentials(res))
+      if(res.role === 'admin'){
+        navigate('/AdminDashboard')
+      }
+      else{
+        navigate('/Dashboard')
+      }
       // navigate('/dashboard');
     } catch (error: any) {
       const ErrorMessage = error?.data?.error?.error || error?.data?.error || error?.error || '❌ Something went wrong. Please try again.';

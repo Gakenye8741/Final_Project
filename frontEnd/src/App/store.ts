@@ -3,6 +3,8 @@ import { userApi } from "../features/APIS/UserApi";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 import authReducer from "../features/Auth/AuthSlice"
+import { eventApi } from "../features/APIS/EventsApi";
+import { venueApi } from "../features/APIS/VenueApi";
 // Create Persist Configuration for auth Slice
 
  const authPersistConfiguration ={
@@ -17,12 +19,14 @@ const persistedAuthReducer =persistReducer(authPersistConfiguration,authReducer)
 export const store = configureStore({
     reducer: {
         [userApi.reducerPath]:userApi.reducer,
+        [eventApi.reducerPath]: eventApi.reducer,
+        [venueApi.reducerPath]: venueApi.reducer,
         auth: persistedAuthReducer,
     },
     middleware: (getDefaultMiddleware)=>
         getDefaultMiddleware({
             serializableCheck: false
-        }).concat(userApi.middleware)
+        }).concat(userApi.middleware,eventApi.middleware,venueApi.middleware)
 })
 
 export const persister = persistStore(store);

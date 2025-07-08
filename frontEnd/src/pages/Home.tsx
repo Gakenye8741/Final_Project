@@ -1,10 +1,12 @@
+import { Footer } from "../components/Footer";
 import { Navbar } from "../components/Navbar";
+import { EventCard } from "../content-folders/Home/EventsCard";
 import App from "../content-folders/Home/HeroHomeSection";
-import { UpcomingEvents } from "../content-folders/Home/UpcomingEvents";
+import { PopularEvents } from "../content-folders/Home/PopularEvents";
 import { VenueList } from "../content-folders/Home/Venue";
 
-// Import the animation components you want to use
-import { Fade, Slide } from "react-awesome-reveal"; // You can choose different effects here
+
+import { Fade } from "react-awesome-reveal"; // You can choose different effects here
 
 export const Home = () => {
   return (
@@ -12,21 +14,19 @@ export const Home = () => {
       {/* Navbar usually doesn't need a scroll animation unless it's a special effect */}
       <Navbar />
 
-      {/* Hero Section with a Fade-in animation */}
       <Fade triggerOnce={true} cascade damping={0.1}>
         <App />
       </Fade>
 
-      {/* Upcoming Events section with a slide-up animation */}
-      {/* triggerOnce={true} makes the animation play only once when it enters the viewport */}
-      <Slide direction="up" triggerOnce={true}>
-        <UpcomingEvents />
-      </Slide>
+      <EventCard/>
 
       {/* Venue List section with another fade-in, perhaps with a slight delay */}
       <Fade triggerOnce={true} delay={300}>
         <VenueList />
       </Fade>
+      <PopularEvents/>
+       <Footer/>
     </div>
+   
   );
 };

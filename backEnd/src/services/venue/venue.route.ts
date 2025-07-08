@@ -10,10 +10,10 @@ export const venueRoute = Router();
 venueRoute.get("/venues/search", searchVenue);
 
 // Get All Venues
-venueRoute.get('/venues' ,anyAuthenticatedUser, GetAllVenues)
+venueRoute.get('/venues' ,GetAllVenues)
 
 // Get Venue By Name
-venueRoute.get('/venues/:name',adminAuth, getVenueByName)
+venueRoute.get('/venues/:name',anyAuthenticatedUser, getVenueByName)
 
 //Get All Venue details through searching
 venueRoute.get('/details/venues/search',adminAuth, venueDetails)

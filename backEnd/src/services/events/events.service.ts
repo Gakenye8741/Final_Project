@@ -2,22 +2,21 @@ import { eq, desc, ilike } from "drizzle-orm";
 import db from "../../drizzle/db";
 import {
   events,
-  venues,
   TInsertEvent,
   TSelectEvent,
 } from "../../drizzle/schema";
 
-// Get all events
+// 🔍 Get all events
 export const getAllEventsService = async (): Promise<TSelectEvent[]> => {
   return await db.query.events.findMany({
     orderBy: [desc(events.createdAt)],
     with: {
-        venue: true,
-    }
+      venue: true,
+    },
   });
 };
 
-// Get event by ID
+// 🔍 Get event by ID
 export const getEventByIdService = async (
   eventId: number
 ): Promise<TSelectEvent | undefined> => {
@@ -29,7 +28,7 @@ export const getEventByIdService = async (
   });
 };
 
-// Get event by title (case-insensitive, partial match)
+// 🔍 Get events by title (case-insensitive, partial match)
 export const getEventsByTitleService = async (
   title: string
 ): Promise<TSelectEvent[]> => {
@@ -41,7 +40,7 @@ export const getEventsByTitleService = async (
   });
 };
 
-// Get events by category (case-insensitive, partial match)
+// 🔍 Get events by category (case-insensitive, partial match)
 export const getEventsByCategoryService = async (
   category: string
 ): Promise<TSelectEvent[]> => {
@@ -53,8 +52,10 @@ export const getEventsByCategoryService = async (
   });
 };
 
-// Get event with its related venue details
-export const getEventWithVenueService = async (eventId: number) => {
+// 🔍 Get event with venue (alias of getEventByIdService)
+export const getEventWithVenueService = async (
+  eventId: number
+): Promise<TSelectEvent | undefined> => {
   return await db.query.events.findFirst({
     where: eq(events.eventId, eventId),
     with: {
@@ -63,7 +64,7 @@ export const getEventWithVenueService = async (eventId: number) => {
   });
 };
 
-// Create a new event
+// ➕ Create a new event
 export const createEventService = async (
   event: TInsertEvent
 ): Promise<string> => {
@@ -71,7 +72,7 @@ export const createEventService = async (
   return "Event created successfully ✅";
 };
 
-// Update an existing event
+// 🔄 Update event
 export const updateEventService = async (
   eventId: number,
   event: Partial<TInsertEvent>
@@ -80,8 +81,10 @@ export const updateEventService = async (
   return "Event updated successfully 🔄";
 };
 
-// Delete event by ID
-export const deleteEventService = async (eventId: number): Promise<string> => {
+// 🗑️ Delete event
+export const deleteEventService = async (
+  eventId: number
+): Promise<string> => {
   await db.delete(events).where(eq(events.eventId, eventId));
   return "Event deleted successfully ❌";
 };

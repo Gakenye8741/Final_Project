@@ -44,7 +44,15 @@ export const getBookingsByUserNationalIdService = async (
     where: eq(bookings.nationalId, nationalId),
     orderBy: [desc(bookings.createdAt)],
     with: {
-      user: true,
+      user: {
+        columns: {
+          nationalId: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          contactPhone: true
+        },
+      },
       event: true,
       payments: true,
     },
