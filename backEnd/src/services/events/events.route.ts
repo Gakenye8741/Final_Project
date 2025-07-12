@@ -7,6 +7,7 @@ import {
   createEvent,
   updateEvent,
   deleteEvent,
+  getEventsByUserId,  // Import the new controller method
 } from "./events.controller";
 
 import { adminAuth, anyAuthenticatedUser } from "../../middleware/bearAuth";
@@ -29,3 +30,6 @@ eventRouter.put("/events/:id", adminAuth, updateEvent);
 
 // 🗑️ Delete Event (admin only)
 eventRouter.delete("/events/:id", adminAuth, deleteEvent);
+
+// 📥 Get Events by User National ID
+eventRouter.get("/events/user/:nationalId", getEventsByUserId);  // New route for fetching events by national ID

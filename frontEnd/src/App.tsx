@@ -12,7 +12,14 @@ import ProtectedRoutes from './components/ProtectedRoutes'
 import Error from './pages/Error'
 import UserProfile from './DashBoards/dashboard/UserProfile'
 import { Analytics } from './DashBoards/adminDashboard/Analytics'
-import AdminUserProfile from '../src/DashBoards/adminDashboard/AdminUserProfile'
+import {AdminUserProfile} from '../src/DashBoards/adminDashboard/AdminUserProfile'
+import { AllUsers } from './DashBoards/adminDashboard/AllUsers'
+import {AllVenues }from './DashBoards/adminDashboard/AllVenues'
+import { EventDetailsPage } from './DashBoards/adminDashboard/AllEvents'
+import BookingsByNationalId from './DashBoards/dashboard/BookingsById'
+import { TicketTypes } from './DashBoards/adminDashboard/getAllTicketTypes'
+import { AllBookings } from './DashBoards/adminDashboard/AllBookings'
+
 
 function App() {
  
@@ -51,14 +58,11 @@ function App() {
           path: "me",
           element: <UserProfile />,
         },
-        // {
-        //   path: "orders",
-        //   element: <Orders />,
-        // },
-        // {
-        //   path: "payments",
-        //   element: <MyPayments />,
-        // },
+        {
+          path: "MyBookings",
+          element: <BookingsByNationalId/>
+        }
+      
       ]
     },
     {
@@ -74,19 +78,27 @@ function App() {
           path: "analytics",
           element: <Analytics />,
         },
-        // {
-        //   path: "allorders",
-        //   element: <AllOrders />,
-        // },
-        // {
-        //   path: "allmeals",
-        //   element: <AllMeals />,
-        // },
-        // {
-        //   path: "allusers",
-        //   element: <AllUsers />,
-          
-        // },
+        {
+          path: "AllBookings",
+          element: <AllBookings/>,
+        },
+
+        {
+          path: "allusers",
+          element: <AllUsers/>
+        },
+        {
+          path: "AllVenues",
+          element: <AllVenues/>
+        },
+        {
+          path: "AllEvents",
+          element: <EventDetailsPage/>
+        },
+        {
+          path: "ticketTypes",
+          element: <TicketTypes/>
+        },
         {
           path: "adminprofile",
           element: <AdminUserProfile />,

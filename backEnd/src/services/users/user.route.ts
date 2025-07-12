@@ -8,6 +8,7 @@ import {
   getUserDetails,
   getUserByNationalId,
   searchUsersWithDetails,
+  updateAdminUser,
 } from "./user.controller";
 
 import { adminAuth, anyAuthenticatedUser } from "../../middleware/bearAuth";
@@ -34,6 +35,11 @@ userRouter.post("/users",createUser);
 
 // ♻️ Update an existing user by national ID
 userRouter.put("/users/:nationalId", updateUser);
+
+
+// ♻️ Update an existing user by national ID
+userRouter.put("/admin/users/:nationalId", updateAdminUser);
+
 
 // ❌ Delete a user by national ID
 userRouter.delete("/users/:nationalId", deleteUser);

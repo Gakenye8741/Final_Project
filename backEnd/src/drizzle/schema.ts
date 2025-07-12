@@ -12,15 +12,23 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
+// =======================
 // ENUMS
+// =======================
+
 export const roleEnum = pgEnum("role", ["user", "admin"]);
 export const bookingStatusEnum = pgEnum("bookingStatus", ["Pending", "Confirmed", "Cancelled"]);
 export const paymentStatusEnum = pgEnum("paymentStatus", ["Pending", "Completed", "Failed"]);
 export const ticketStatusEnum = pgEnum("status", ["Open", "In Progress", "Resolved", "Closed"]);
+export const venueStatusEnum = pgEnum("venueStatus", ["available", "booked"]);
+export const eventStatusEnum = pgEnum("eventStatus", ["in_progress", "ended", "cancelled", "upcoming"]); // ✅ NEW ENUM
 
+// =======================
 // USERS
+// =======================
+
 export const users = pgTable("users", {
-  nationalId: integer("nationalId").primaryKey(), 
+  nationalId: integer("nationalId").primaryKey(),
   firstName: varchar("firstName", { length: 15 }).notNull(),
   lastName: varchar("lastName", { length: 15 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
@@ -32,16 +40,23 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
+// =======================
 // VENUES
+// =======================
+
 export const venues = pgTable("venues", {
   venueId: serial("venueId").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   address: text("address").notNull(),
   capacity: integer("capacity").notNull(),
+  status: venueStatusEnum("status").default("available").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
+// =======================
 // EVENTS
+// =======================
+
 export const events = pgTable("events", {
   eventId: serial("eventId").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
@@ -53,15 +68,35 @@ export const events = pgTable("events", {
   ticketPrice: decimal("ticketPrice", { precision: 10, scale: 2 }).notNull(),
   ticketsTotal: integer("ticketsTotal").notNull(),
   ticketsSold: integer("ticketsSold").default(0),
+  status: eventStatusEnum("eventStatus").default("in_progress").notNull(), // ✅ NEW FIELD
+  cancellationPolicy: text("cancellationPolicy"), // ✅ UPDATED FIELD
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
+// =======================
+// TICKET TYPES
+// =======================
+
+export const ticketTypes = pgTable("ticketTypes", {
+  ticketTypeId: serial("ticketTypeId").primaryKey(),
+  eventId: integer("eventId").references(() => events.eventId, { onDelete: "cascade" }).notNull(),
+  name: varchar("name", { length: 100 }).notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  quantity: integer("quantity").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+// =======================
 // BOOKINGS
+// =======================
+
 export const bookings = pgTable("bookings", {
   bookingId: serial("bookingId").primaryKey(),
-  nationalId: integer("nationalId").references(() => users.nationalId, { onDelete: "cascade" }), // updated to integer
+  nationalId: integer("nationalId").references(() => users.nationalId, { onDelete: "cascade" }),
   eventId: integer("eventId").references(() => events.eventId, { onDelete: "cascade" }),
+  ticketTypeId: integer("ticketTypeId").references(() => ticketTypes.ticketTypeId),
+  ticketTypeName: varchar("ticketTypeName", { length: 100 }), // Store ticket name here
   quantity: integer("quantity").notNull(),
   totalAmount: decimal("totalAmount", { precision: 10, scale: 2 }).notNull(),
   bookingStatus: bookingStatusEnum("bookingStatus").default("Pending").notNull(),
@@ -69,7 +104,11 @@ export const bookings = pgTable("bookings", {
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
+
+// =======================
 // PAYMENTS
+// =======================
+
 export const payments = pgTable("payments", {
   paymentId: serial("paymentId").primaryKey(),
   bookingId: integer("bookingId").references(() => bookings.bookingId, { onDelete: "cascade" }),
@@ -82,10 +121,13 @@ export const payments = pgTable("payments", {
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
+// =======================
 // SUPPORT TICKETS
+// =======================
+
 export const supportTickets = pgTable("supportTickets", {
   ticketId: serial("ticketId").primaryKey(),
-  nationalId: integer("nationalId").references(() => users.nationalId, { onDelete: "cascade" }), // updated to integer
+  nationalId: integer("nationalId").references(() => users.nationalId, { onDelete: "cascade" }),
   subject: varchar("subject", { length: 255 }).notNull(),
   description: text("description").notNull(),
   status: ticketStatusEnum("status").default("Open").notNull(),
@@ -93,7 +135,10 @@ export const supportTickets = pgTable("supportTickets", {
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
+// =======================
 // RELATIONS
+// =======================
+
 export const usersRelations = relations(users, ({ many }) => ({
   bookings: many(bookings),
   supportTickets: many(supportTickets),
@@ -109,6 +154,14 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
     references: [venues.venueId],
   }),
   bookings: many(bookings),
+  ticketTypes: many(ticketTypes),
+}));
+
+export const ticketTypesRelations = relations(ticketTypes, ({ one }) => ({
+  event: one(events, {
+    fields: [ticketTypes.eventId],
+    references: [events.eventId],
+  }),
 }));
 
 export const bookingsRelations = relations(bookings, ({ one, many }) => ({
@@ -119,6 +172,10 @@ export const bookingsRelations = relations(bookings, ({ one, many }) => ({
   event: one(events, {
     fields: [bookings.eventId],
     references: [events.eventId],
+  }),
+  ticketType: one(ticketTypes, {
+    fields: [bookings.ticketTypeId],
+    references: [ticketTypes.ticketTypeId],
   }),
   payments: many(payments),
 }));
@@ -137,7 +194,10 @@ export const supportTicketsRelations = relations(supportTickets, ({ one }) => ({
   }),
 }));
 
-// INFERRED TYPES
+// =======================
+// TYPES
+// =======================
+
 export type TSelectUser = typeof users.$inferSelect;
 export type TInsertUser = typeof users.$inferInsert;
 
@@ -146,6 +206,9 @@ export type TInsertVenue = typeof venues.$inferInsert;
 
 export type TSelectEvent = typeof events.$inferSelect;
 export type TInsertEvent = typeof events.$inferInsert;
+
+export type TSelectTicketType = typeof ticketTypes.$inferSelect;
+export type TInsertTicketType = typeof ticketTypes.$inferInsert;
 
 export type TSelectBooking = typeof bookings.$inferSelect;
 export type TInsertBooking = typeof bookings.$inferInsert;

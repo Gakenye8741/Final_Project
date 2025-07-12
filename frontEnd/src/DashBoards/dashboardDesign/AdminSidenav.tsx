@@ -1,37 +1,56 @@
+import { Link, NavLink } from "react-router-dom";
+import { SquareUserRound, LogOut, TrendingUpIcon, User } from "lucide-react";
+import { FaDollarSign, FaUsers } from "react-icons/fa";
+import { FaClipboardList } from "react-icons/fa6";  // New icon
+import { useDispatch } from "react-redux";
+import { clearCredentials } from "../../features/Auth/AuthSlice";
 
-import { SquareUserRound, LogOut, TrendingUpIcon } from "lucide-react"
-import { FaDollarSign, FaUsers } from "react-icons/fa"
-import { FaShop } from "react-icons/fa6"
-import { Link } from "react-router-dom"
+const navItems = [
+  { name: "Analytics", path: "analytics", icon: <TrendingUpIcon className="text-indigo-400" /> },
+  { name: "All Users", path: "AllUsers", icon: <FaUsers className="text-blue-400" /> }, // Updated icon
+  { name: "All Bookings", path: "AllBookings", icon: <FaUsers className="text-crimson-400" /> }, // Updated icon
 
+  { name: "All Venues", path: "Allvenues", icon: <FaClipboardList className="text-green-400" /> }, // Updated icon
+  { name: "All Events", path: "AllEvents", icon: <FaDollarSign className="text-yellow-400" /> }, 
+  { name: "All Ticket Types", path: "ticketTypes", icon: <SquareUserRound className="text-red-400" /> },
+  { name: "My Profile", path: "adminprofile", icon: <User className="text-purple-400" /> }, 
+  { name: "Logout", path: "#", icon: <LogOut className="text-red-500" /> },
+];
 
-export const AdminSideNav =()=> {
-    return (
-        <ul className="menu bg-gray-300 text-dark-300 shadow-lg min-w-full gap-2 text-base-content min-h-full">            
-            <li>
-                <Link to="analytics"><TrendingUpIcon className=" text-orange-600"/>Analytics</Link>
-            </li>
-             <li>
-                <Link to="AllUsers"><FaShop className=" text-orange-600"/>All Users</Link>
-            </li>
-            <li>
-                <Link to="allmeals"><FaDollarSign className=" text-orange-600"/>All Meals</Link>
-            </li>
-            <li>
-                <Link to="allusers"><FaUsers className=" text-orange-600"/>All Users</Link>
-            </li>
-            <li>
-                <Link to="adminprofile"><SquareUserRound className=" text-orange-600"/>My Profile</Link>
-            </li>
-            <li>
-                <Link to="#"><LogOut className=" text-red-600"/>Logout</Link>
-            </li>
-            <li>
-                <Link to="/">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-house text-green-500"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
-                    Home
-                </Link>
-            </li>
-        </ul>
-    )
-}
+export const AdminSideNav = () => {
+ const dispatch = useDispatch()
+  const handleLogout = () => {
+    dispatch(clearCredentials())
+  };
+
+  return (
+    <aside className="h-full w-full p-4 bg-gray-900 text-white space-y-2 overflow-y-auto">
+      {navItems.map((item, index) =>
+        item.name === "Logout" ? (
+          <button
+            key={index}
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-4 py-2 rounded hover:bg-gray-800 transition"
+            aria-label="Logout"
+          >
+            {item.icon}
+            <span>{item.name}</span>
+          </button>
+        ) : (
+          <NavLink
+            key={index}
+            to={item.path}
+            className="flex items-center gap-3 px-4 py-2 rounded hover:bg-gray-800 transition"
+          
+            aria-label={`Go to ${item.name}`}
+          >
+            {item.icon}
+            <span>{item.name}</span>
+          </NavLink>
+          
+        )
+        
+      )}
+    </aside>
+  );
+};

@@ -12,6 +12,7 @@ import { bookingRouter } from './services/bookings/bookings.route';
 import { paymentRouter } from './services/payments/payments.route';
 import { authRouter } from './auth/auth.route';
 import { rateLimiterMiddleware } from './middleware/rate-limiter';
+import { ticketRouter } from './services/TicketType/ticket.Route';
 
 
 dotenv.config();
@@ -42,6 +43,7 @@ app.use('/api', venueRoute)
 app.use('/api',eventRouter)
 app.use('/api', bookingRouter)
 app.use('/api', paymentRouter)
+app.use('/api', ticketRouter)
 
 // ✅ Start server
 app.listen(PORT, () => {

@@ -7,6 +7,7 @@ import {
   createEventService,
   updateEventService,
   deleteEventService,
+  getEventsByUserIdService,
 } from "./events.service";
 
 // Get all events
@@ -207,4 +208,23 @@ export const deleteEvent = async (req: Request, res: Response) => {
   }
 };
 
+// Get events by user's national ID
+export const getEventsByUserId = async (req: Request, res: Response) => {
+  const nationalId = parseInt(req.params.nationalId);
 
+  if (isNaN(nationalId)) {
+    res.status(400).json({ error: "🚫 Invalid national ID" });
+    return;
+  }
+
+  try {
+    const events = await getEventsByUserIdService(nationalId);
+    if (events.length === 0) {
+      res.status(404).json({ message: `🔍 No events found for user with national ID: ${nationalId}` });
+    } else {
+      res.status(200).json(events);
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: "🚫 " + (error.message || "Failed to retrieve events by user ID") });
+  }
+};

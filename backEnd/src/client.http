@@ -6,17 +6,41 @@ POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
  {
-    "nationalId": 41436941,
-    "firstName": "Brian",
-    "lastName": "Gakenye",
-    "email": "brayogakenye@gmail.com",
+    "nationalId": 12345678,
+    "firstName": "GAKENYE123",
+    "lastName": "NDIRITU",
+    "email": "brayogakenye06@gmail.com",
     "password":"Gakenye123#",
     "contactPhone": "+25412345678",
     "address": "50 Nyeri",
-    "role": "admin"
+    
   
   }
+###
+POST http://localhost:5000/api/bookings
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYXRpb25hbElkIjo0MTQyNjk0OCwiZW1haWwiOiJicmF5b2dha2VueWUwN0BnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImZpcnN0TmFtZSI6IkdBS0VOWUUxMjMiLCJsYXN0TmFtZSI6Ik5ESVJJVFUiLCJjb250YWN0UGhvbmUiOiIrMjU0MTIzNDU2NzgiLCJhZGRyZXNzIjoiNTAgTnllcmkiLCJleHAiOjE3NTIyNDQ3MTAsImlhdCI6MTc1MjI0MTExMH0.JoOd3GE-FBUIEQMhsq1XHGM61FhfNM3PLDRo1Sf8FRY
+Content-Type: application/json
 
+
+{
+  "nationalId": "41426948",
+  "eventId": 5,
+  "quantity": 2,
+  "totalAmount": 100,
+  "ticketTypeId": "2"
+}
+
+###
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+ {    
+    "email": "brayogakenye07@gmail.com",
+    "password":"Gakenye123#"  
+  }
+
+###
+GET http://localhost:5000/api/events/user/123455678
   
 ###
 POST http://localhost:5000/api/events/purchase-by-title/Jazz Night Under the 
@@ -57,10 +81,10 @@ DELETE http://localhost:5000/api/users/13
 
 
 ###
-GET http://localhost:5000/api/users/
+GET http://localhost:5000/api/users
 
 ###
-GET http://localhost:5000/api/users/10/details
+GET http://localhost:5000/api/users/41426948/details
 
 ###
 GET http://localhost:5000/api/users-search?lastName=u
@@ -69,7 +93,15 @@ GET http://localhost:5000/api/users-search?lastName=u
 GET http://localhost:5000/api/tickets/2/details
 
 ###
-GET http://localhost:5000/api/venues
+PUT http://localhost:5000/api/venues/2
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYXRpb25hbElkIjo0MTQyNjk0MiwiZW1haWwiOiJicmF5b2dha2VueWVAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiZmlyc3ROYW1lIjoiR0FLRU5ZRSIsImxhc3ROYW1lIjoiTkRJUklUVSIsImNvbnRhY3RQaG9uZSI6IisyNTQxMjM0NTY3OCIsImFkZHJlc3MiOiI1MCBOeWVyaSIsImV4cCI6MTc1MjA1ODc1NywiaWF0IjoxNzUyMDU1MTU3fQ.O_GxZ1-T0-2ytCLMNvg4rpRYB6fgkaoi9V2TrF0-GCM
+Content-Type:application/json
+
+{
+    "name": "Sarit Expo Centre",
+    "address": "Westlands, Nairobi",
+    "capacity": 1503
+}
 
 ###
 GET http://localhost:5000/api/venues/search?name=GA

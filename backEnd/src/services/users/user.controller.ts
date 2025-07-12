@@ -143,6 +143,27 @@ export const updateUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message || "Failed to update user" });
   }
 };
+// Update user by nationalId
+export const updateAdminUser = async (req: Request, res: Response) => {
+  const nationalId = parseInt(req.params.nationalId);
+  if (isNaN(nationalId)) {
+    res.status(400).json({ error: "Invalid national ID" });
+    return;
+  }
+
+  const { firstName, lastName, email, password ,role} = req.body;
+  if (!firstName || !lastName || !email || !password || !role) {
+    res.status(400).json({ error: "All fields are required" });
+    return;
+  }
+
+  try {
+    const result = await updateUserService(nationalId, { firstName, lastName, email, password ,role});
+    res.status(200).json({ message: result });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || "Failed to update user" });
+  }
+};
 
 // Delete user by nationalId
 export const deleteUser = async (req: Request, res: Response) => {

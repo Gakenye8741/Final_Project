@@ -1,9 +1,12 @@
-import { eq, desc, ilike } from "drizzle-orm";
+import { eq, inArray, desc, ilike } from "drizzle-orm";
 import db from "../../drizzle/db";
 import {
   events,
+  bookings,
+  users,
   TInsertEvent,
   TSelectEvent,
+  TSelectBooking,
 } from "../../drizzle/schema";
 
 // 🔍 Get all events
@@ -62,6 +65,36 @@ export const getEventWithVenueService = async (
       venue: true,
     },
   });
+};
+
+// 🔍 Get events by user's nationalId (based on bookings)
+export const getEventsByUserIdService = async (
+  nationalId: number
+): Promise<TSelectEvent[]> => {
+  // Fetch bookings related to the user
+  const userBookings = await db.query.bookings.findMany({
+    where: eq(bookings.nationalId, nationalId),
+    orderBy: [desc(bookings.createdAt)], // Or order by event date, etc.
+  });
+
+  // Extract event IDs from the bookings and filter out null values
+  const eventIds = userBookings.map((booking) => booking.eventId).filter((eventId) => eventId !== null);
+
+  // Ensure that eventIds is not empty before proceeding
+  if (eventIds.length === 0) {
+    return [];
+  }
+
+  // Fetch the events using the extracted event IDs
+  const eventsList = await db.query.events.findMany({
+    where: inArray(events.eventId, eventIds), // Use inArray to match multiple event IDs
+    orderBy: [desc(events.createdAt)], // Or order by event date, etc.
+    with: {
+      venue: true,
+    },
+  });
+
+  return eventsList;
 };
 
 // ➕ Create a new event

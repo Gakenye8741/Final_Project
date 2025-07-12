@@ -5,6 +5,8 @@ import { persistReducer, persistStore } from "redux-persist";
 import authReducer from "../features/Auth/AuthSlice"
 import { eventApi } from "../features/APIS/EventsApi";
 import { venueApi } from "../features/APIS/VenueApi";
+import { bookingApi } from "../features/APIS/BookingsApi";
+import { ticketApi } from "../features/APIS/ticketsType.Api";
 // Create Persist Configuration for auth Slice
 
  const authPersistConfiguration ={
@@ -21,12 +23,14 @@ export const store = configureStore({
         [userApi.reducerPath]:userApi.reducer,
         [eventApi.reducerPath]: eventApi.reducer,
         [venueApi.reducerPath]: venueApi.reducer,
+        [bookingApi.reducerPath]: bookingApi.reducer,
+        [ticketApi.reducerPath]: ticketApi.reducer,
         auth: persistedAuthReducer,
     },
     middleware: (getDefaultMiddleware)=>
         getDefaultMiddleware({
             serializableCheck: false
-        }).concat(userApi.middleware,eventApi.middleware,venueApi.middleware)
+        }).concat(userApi.middleware,eventApi.middleware,venueApi.middleware,bookingApi.middleware,ticketApi.middleware)
 })
 
 export const persister = persistStore(store);

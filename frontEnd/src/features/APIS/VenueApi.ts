@@ -31,8 +31,9 @@ export const venueApi = createApi({
 
     // 🔄 Update Venue
     updateVenue: builder.mutation({
-      query: ({ id, ...body }) => ({
-        url: `venues/${id}`,
+      // ⬇️ Using `venueId` instead of `id` to match frontend payload
+      query: ({ venueId, ...body }) => ({
+        url: `venues/${venueId}`, // ✅ Correctly uses venueId
         method: 'PUT',
         body,
       }),

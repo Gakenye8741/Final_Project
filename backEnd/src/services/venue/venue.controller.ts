@@ -73,12 +73,12 @@ export const venueDetails = async (req: Request, res: Response) =>{
 
 // Create a Venue
 export const CreateVenue = async(req: Request, res: Response) =>{
-    const {name, address, capacity } = req.body;
-    if(!name || !address || !capacity ){
+    const {name, address, capacity ,status} = req.body;
+    if(!name || !address || !capacity || !status ){
        res.status(400).json({ error: "⚠️ All Fields Are Required" });
     }
     try {
-     const results = await CreateVenueServices({name, address, capacity });
+     const results = await CreateVenueServices({name, address, capacity ,status});
      res.status(200).json({message: results});
         
     } catch (error:any) {
