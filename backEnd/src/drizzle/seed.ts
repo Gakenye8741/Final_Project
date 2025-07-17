@@ -7,6 +7,7 @@ import {
   bookings,
   payments,
   supportTickets,
+  media,
 } from "../drizzle/schema";
 
 async function seed() {
@@ -193,7 +194,7 @@ async function seed() {
       nationalId: 1001,
       eventId: insertedEvents[0].eventId,
       ticketTypeId: insertedTicketTypes[0].ticketTypeId,
-      ticketTypeName: "General Admission", // Added ticketTypeName field
+      ticketTypeName: "General Admission",
       quantity: 2,
       totalAmount: "100.00",
       bookingStatus: "Confirmed",
@@ -202,7 +203,7 @@ async function seed() {
       nationalId: 1002,
       eventId: insertedEvents[1].eventId,
       ticketTypeId: insertedTicketTypes[2].ticketTypeId,
-      ticketTypeName: "Standard", // Added ticketTypeName field
+      ticketTypeName: "Standard",
       quantity: 1,
       totalAmount: "150.00",
       bookingStatus: "Pending",
@@ -211,7 +212,7 @@ async function seed() {
       nationalId: 1003,
       eventId: insertedEvents[2].eventId,
       ticketTypeId: insertedTicketTypes[3].ticketTypeId,
-      ticketTypeName: "Regular", // Added ticketTypeName field
+      ticketTypeName: "Regular",
       quantity: 3,
       totalAmount: "225.00",
       bookingStatus: "Confirmed",
@@ -220,7 +221,7 @@ async function seed() {
       nationalId: 1004,
       eventId: insertedEvents[3].eventId,
       ticketTypeId: insertedTicketTypes[4].ticketTypeId,
-      ticketTypeName: "VIP", // Added ticketTypeName field
+      ticketTypeName: "VIP",
       quantity: 1,
       totalAmount: "50.00",
       bookingStatus: "Pending",
@@ -229,7 +230,7 @@ async function seed() {
       nationalId: 1005,
       eventId: insertedEvents[4].eventId,
       ticketTypeId: insertedTicketTypes[0].ticketTypeId,
-      ticketTypeName: "General Admission", // Added ticketTypeName field
+      ticketTypeName: "General Admission",
       quantity: 5,
       totalAmount: "250.00",
       bookingStatus: "Cancelled",
@@ -306,6 +307,40 @@ async function seed() {
       subject: "Account Login Issue",
       description: "I can't log in to my account.",
       status: "Open",
+    },
+  ]);
+
+  // MEDIA
+  await db.insert(media).values([
+    {
+      eventId: insertedEvents[0].eventId,
+      type: "image",
+      url: "https://example.com/images/musicfest-1.jpg",
+    },
+    {
+      eventId: insertedEvents[0].eventId,
+      type: "video",
+      url: "https://example.com/videos/musicfest-2025-highlights.mp4",
+    },
+    {
+      eventId: insertedEvents[1].eventId,
+      type: "image",
+      url: "https://example.com/images/techconf-1.jpg",
+    },
+    {
+      eventId: insertedEvents[2].eventId,
+      type: "video",
+      url: "https://example.com/videos/rockconcert-live.mp4",
+    },
+    {
+      eventId: insertedEvents[3].eventId,
+      type: "image",
+      url: "https://example.com/images/footballmatch-promo.jpg",
+    },
+    {
+      eventId: insertedEvents[4].eventId,
+      type: "image",
+      url: "https://example.com/images/artexhibit-gallery.jpg",
     },
   ]);
 

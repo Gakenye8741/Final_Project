@@ -3,6 +3,17 @@ import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../App/store";
 import { clearCredentials } from "../features/Auth/AuthSlice";
+import {
+  Home,
+  Info,
+  CalendarDays,
+  UserPlus,
+  LogIn,
+  LogOut,
+  User,
+  ChevronDown,
+  UserCheck,
+} from "lucide-react";
 
 export const Navbar = () => {
   const location = useLocation();
@@ -12,7 +23,7 @@ export const Navbar = () => {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const firstName = useSelector((state: RootState) => state.auth.user?.firstName || "User");
-  const lastName = useSelector((state: RootState)=> state.auth.user?.lastName || "User");
+  const lastName = useSelector((state: RootState) => state.auth.user?.lastName || "User");
   const role = useSelector((state: RootState) => state.auth.role);
 
   const isActive = (path: string) =>
@@ -51,6 +62,7 @@ export const Navbar = () => {
             <button
               className="btn btn-ghost lg:hidden"
               onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Toggle menu"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -65,29 +77,29 @@ export const Navbar = () => {
             <ul className="menu menu-sm dropdown-content bg-base-100 rounded-box z-10 mt-3 w-52 p-2 shadow">
               <li>
                 <Link className={isActive("/")} to="/" onClick={() => setMenuOpen(false)}>
-                  Home
+                  <Home className="inline mr-2 h-4 w-4" /> Home
                 </Link>
               </li>
               <li>
                 <Link className={isActive("/about")} to="/about" onClick={() => setMenuOpen(false)}>
-                  About
+                  <Info className="inline mr-2 h-4 w-4" /> About
                 </Link>
               </li>
               <li>
                 <Link className={isActive("/events")} to="/events" onClick={() => setMenuOpen(false)}>
-                  Events
+                  <CalendarDays className="inline mr-2 h-4 w-4" /> Events
                 </Link>
               </li>
               {!isAuthenticated && (
                 <>
                   <li>
                     <Link className={isActive("/register")} to="/register" onClick={() => setMenuOpen(false)}>
-                      Register
+                      <UserPlus className="inline mr-2 h-4 w-4" /> Register
                     </Link>
                   </li>
                   <li>
                     <Link className={isActive("/login")} to="/login" onClick={() => setMenuOpen(false)}>
-                      Login
+                      <LogIn className="inline mr-2 h-4 w-4" /> Login
                     </Link>
                   </li>
                 </>
@@ -95,7 +107,7 @@ export const Navbar = () => {
             </ul>
           </div>
 
-          <Link to="/" className="btn btn-ghost text-xl">
+          <Link to="/" className="btn btn-ghost text-xl flex items-center gap-1">
             TicketStream 🎫
           </Link>
         </div>
@@ -105,17 +117,17 @@ export const Navbar = () => {
           <ul className="menu menu-horizontal px-1">
             <li>
               <Link className={isActive("/")} to="/">
-                Home
+                <Home className="inline mr-2 h-4 w-4" /> Home
               </Link>
             </li>
             <li>
               <Link className={isActive("/about")} to="/about">
-                About
+                <Info className="inline mr-2 h-4 w-4" /> About
               </Link>
             </li>
             <li>
               <Link className={isActive("/events")} to="/events">
-                Events
+                <CalendarDays className="inline mr-2 h-4 w-4" /> Events
               </Link>
             </li>
           </ul>
@@ -125,18 +137,10 @@ export const Navbar = () => {
         <div className="navbar-end flex gap-2 items-center">
           {isAuthenticated ? (
             <div className="dropdown dropdown-end group">
-              <label tabIndex={0}>
-                <div className="btn btn-outline btn-primary capitalize flex items-center gap-2 cursor-pointer">
+              <label tabIndex={0} className="flex items-center cursor-pointer">
+                <div className="btn btn-outline btn-primary capitalize flex items-center gap-2">
                   Hey {firstName}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 transition-transform duration-200 group-hover:rotate-180"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
+                  <ChevronDown className="h-4 w-4 transition-transform duration-200 group-hover:rotate-180" />
                 </div>
               </label>
               <ul
@@ -145,12 +149,12 @@ export const Navbar = () => {
               >
                 <li>
                   {role === "admin" ? (
-                    <Link to="/AdminDashBoard" className="font-bold">
-                      Admin Dashboard
+                    <Link to="/AdminDashBoard" className="font-bold flex items-center gap-2">
+                      <UserCheck className="h-5 w-5" /> Admin Dashboard
                     </Link>
                   ) : (
-                    <Link to="/dashboard" className="font-bold">
-                      User Dashboard
+                    <Link to="/dashboard" className="font-bold flex items-center gap-2">
+                      <User className="h-5 w-5" /> User Dashboard
                     </Link>
                   )}
                 </li>
@@ -160,8 +164,9 @@ export const Navbar = () => {
                       handleLogout();
                       setMenuOpen(false);
                     }}
+                    className="flex items-center gap-2"
                   >
-                    Logout
+                    <LogOut className="h-5 w-5" /> Logout
                   </button>
                 </li>
               </ul>
@@ -169,10 +174,10 @@ export const Navbar = () => {
           ) : (
             <div className="hidden lg:flex gap-2">
               <Link to="/register" className={`btn btn-ghost ${isActive("/register")}`}>
-                Register
+                <UserPlus className="inline mr-2 h-4 w-4" /> Register
               </Link>
               <Link to="/login" className={`btn ${isActive("/login")}`}>
-                Login
+                <LogIn className="inline mr-2 h-4 w-4" /> Login
               </Link>
             </div>
           )}

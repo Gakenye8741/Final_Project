@@ -10,6 +10,8 @@ import {
 } from "../../features/APIS/UserApi";
 
 import "../adminDashboard/style.css";
+import { FaEdit } from "react-icons/fa";
+import { FaDeleteLeft } from "react-icons/fa6";
 
 interface userData {
   nationalId: number;
@@ -282,13 +284,13 @@ export const AllUsers = () => {
                         onClick={() => handleEdit(user)}
                         className="px-3 py-1 bg-blue-500 hover:bg-blue-600 rounded text-white text-xs"
                       >
-                        Edit
+                        <FaEdit/>
                       </button>
                       <button
                         onClick={() => handleDelete(user.nationalId)}
                         className="px-3 py-1 bg-red-500 hover:bg-red-600 rounded text-white text-xs"
                       >
-                        Delete
+                        <FaDeleteLeft/>
                       </button>
                     </td>
                   </tr>

@@ -6,16 +6,26 @@ POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
  {
-    "nationalId": 12345678,
-    "firstName": "GAKENYE123",
-    "lastName": "NDIRITU",
-    "email": "brayogakenye06@gmail.com",
+    "nationalId": 41436942,
+    "firstName": "Gakenye",
+    "lastName": "Ndiritu",
+    "email": "codewithgakenye@gmail.com",
     "password":"Gakenye123#",
     "contactPhone": "+25412345678",
     "address": "50 Nyeri",
+    "role":"admin"
     
   
   }
+
+###
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+   "email": "codewithgakenye@gmail.com",
+    "password":"Gakenye123#"
+}
 ###
 POST http://localhost:5000/api/bookings
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYXRpb25hbElkIjo0MTQyNjk0OCwiZW1haWwiOiJicmF5b2dha2VueWUwN0BnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImZpcnN0TmFtZSI6IkdBS0VOWUUxMjMiLCJsYXN0TmFtZSI6Ik5ESVJJVFUiLCJjb250YWN0UGhvbmUiOiIrMjU0MTIzNDU2NzgiLCJhZGRyZXNzIjoiNTAgTnllcmkiLCJleHAiOjE3NTIyNDQ3MTAsImlhdCI6MTc1MjI0MTExMH0.JoOd3GE-FBUIEQMhsq1XHGM61FhfNM3PLDRo1Sf8FRY
@@ -35,9 +45,12 @@ POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
  {    
-    "email": "brayogakenye07@gmail.com",
+    "email": "codewithgakenye@gmail.com",
     "password":"Gakenye123#"  
   }
+
+###
+GET http://localhost:5000/api/ticket-types/event/3
 
 ###
 GET http://localhost:5000/api/events/user/123455678

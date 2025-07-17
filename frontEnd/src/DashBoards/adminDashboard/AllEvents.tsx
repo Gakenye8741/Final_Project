@@ -4,6 +4,8 @@ import withReactContent from "sweetalert2-react-content";
 import { PuffLoader } from "react-spinners";
 import { eventApi } from "../../features/APIS/EventsApi";
 import { venueApi } from "../../features/APIS/VenueApi";
+import { FaEdit } from "react-icons/fa";
+import { FaDeleteLeft } from "react-icons/fa6";
 
 const MySwal = withReactContent(Swal);
 
@@ -290,13 +292,13 @@ export const EventDetailsPage = () => {
                         onClick={() => openEventModal(event)}
                         className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 rounded text-white text-xs"
                       >
-                        Edit
+                        <FaEdit/>
                       </button>
                       <button
                         onClick={() => handleDelete(event.eventId)}
                         className="px-3 py-1 bg-red-500 hover:bg-red-600 rounded text-white text-xs"
                       >
-                        Delete
+                        <FaDeleteLeft/>
                       </button>
                     </td>
                   </tr>

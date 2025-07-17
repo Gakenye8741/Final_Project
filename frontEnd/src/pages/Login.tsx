@@ -3,9 +3,11 @@ import loginImage from '../../src/assets/image-UqgNANsLtSGIkgMfhkxPvvVyfWIhWH.pn
 import { Navbar } from '../components/Navbar';
 import { toast, Toaster } from 'sonner';
 import { userApi } from '../features/APIS/UserApi';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../features/Auth/AuthSlice';
+import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface LoginDetails {
   email: string;
@@ -16,23 +18,16 @@ const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginDetails>();
   const [LoginUser, { isLoading }] = userApi.useLoginUserMutation();
   const navigate = useNavigate();
-  const Dispatch = useDispatch()
+  const Dispatch = useDispatch();
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data: LoginDetails) => {
     const loadingToastId = toast.loading("Logging In...");
-    console.log(data);
     try {
-      const res = await LoginUser(data).unwrap(); 
-      console.log(res);
+      const res = await LoginUser(data).unwrap();
       toast.success('✅ Logged in successfully', { id: loadingToastId });
-      Dispatch(setCredentials(res))
-      if(res.role === 'admin'){
-        navigate('/AdminDashboard')
-      }
-      else{
-        navigate('/Dashboard')
-      }
-      // navigate('/dashboard');
+      Dispatch(setCredentials(res));
+      navigate(res.role === 'admin' ? '/AdminDashboard' : '/Dashboard');
     } catch (error: any) {
       const ErrorMessage = error?.data?.error?.error || error?.data?.error || error?.error || '❌ Something went wrong. Please try again.';
       toast.error(`Failed to login: ${ErrorMessage}`, { id: loadingToastId });
@@ -44,6 +39,7 @@ const Login = () => {
       <Toaster richColors position='top-right' />
       <Navbar />
       <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-gradient-to-br from-white to-slate-100 dark:from-gray-900 dark:to-gray-800">
+        {/* Image Side */}
         <div className="hidden md:block">
           <img
             src={loginImage}
@@ -52,16 +48,18 @@ const Login = () => {
           />
         </div>
 
+        {/* Form Side */}
         <div className="flex items-center justify-center p-6">
-          <div className="bg-white dark:bg-gray-900 shadow-xl rounded-xl p-8 w-full max-w-sm">
-            <h2 className="text-2xl font-bold mb-6 text-center text-primary">🎫 Event Portal Login</h2>
+          <div className="bg-white dark:bg-gray-900 shadow-2xl rounded-2xl p-8 w-full max-w-sm transition-all">
+            <h2 className="text-3xl font-bold mb-6 text-center text-primary">🎫 Event Portal Login</h2>
 
-            <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+            <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+              {/* Email Field */}
               <div>
-                <label className="block text-sm font-medium mb-1">Email</label>
+                <label className="block text-sm font-medium mb-1">📧 Email</label>
                 <input
                   type="email"
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary transition"
                   placeholder="Enter your email"
                   {...register('email', { required: true })}
                 />
@@ -70,23 +68,47 @@ const Login = () => {
                 )}
               </div>
 
+              {/* Password Field */}
               <div>
-                <label className="block text-sm font-medium mb-1">Password</label>
-                <input
-                  type="password"
-                  className="input input-bordered w-full"
-                  placeholder="Enter your password"
-                  {...register('password', { required: true })}
-                />
+                <label className="block text-sm font-medium mb-1">🔐 Password</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    className="input input-bordered w-full rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-primary transition"
+                    placeholder="Enter your password"
+                    {...register('password', { required: true })}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-primary"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
                 {errors.password && (
                   <span className="text-red-500 text-sm mt-1 block">Password is required.</span>
                 )}
               </div>
 
-              <button type="submit" className="btn btn-primary w-full mt-4" disabled={isLoading}>
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="btn btn-primary w-full mt-4 rounded-lg text-lg tracking-wide transition hover:scale-[1.02] active:scale-95"
+                disabled={isLoading}
+              >
                 {isLoading ? '🚀 Logging in...' : '🎯 Login'}
               </button>
             </form>
+
+            {/* Link to Register */}
+            <p className="text-sm text-center mt-5 text-gray-600 dark:text-gray-300">
+              Don't have an account?{' '}
+              <Link to="/register" className="text-primary hover:underline">
+                Register here
+              </Link>
+            </p>
           </div>
         </div>
       </div>

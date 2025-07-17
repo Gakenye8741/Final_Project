@@ -1,26 +1,32 @@
-import { Link, NavLink } from "react-router-dom";
-import { SquareUserRound, LogOut, TrendingUpIcon, User } from "lucide-react";
-import { FaDollarSign, FaUsers } from "react-icons/fa";
-import { FaClipboardList } from "react-icons/fa6";  // New icon
+import { NavLink } from "react-router-dom";
+import { 
+  TrendingUp, 
+  Users, 
+  ClipboardList, 
+  User, 
+  LogOut, 
+  DollarSign, 
+  Ticket 
+} from "lucide-react";
 import { useDispatch } from "react-redux";
 import { clearCredentials } from "../../features/Auth/AuthSlice";
 
 const navItems = [
-  { name: "Analytics", path: "analytics", icon: <TrendingUpIcon className="text-indigo-400" /> },
-  { name: "All Users", path: "AllUsers", icon: <FaUsers className="text-blue-400" /> }, // Updated icon
-  { name: "All Bookings", path: "AllBookings", icon: <FaUsers className="text-crimson-400" /> }, // Updated icon
-
-  { name: "All Venues", path: "Allvenues", icon: <FaClipboardList className="text-green-400" /> }, // Updated icon
-  { name: "All Events", path: "AllEvents", icon: <FaDollarSign className="text-yellow-400" /> }, 
-  { name: "All Ticket Types", path: "ticketTypes", icon: <SquareUserRound className="text-red-400" /> },
-  { name: "My Profile", path: "adminprofile", icon: <User className="text-purple-400" /> }, 
+  { name: "Analytics", path: "analytics", icon: <TrendingUp className="text-indigo-400" /> },
+  { name: "All Users", path: "AllUsers", icon: <Users className="text-blue-400" /> },
+  { name: "All Bookings", path: "AllBookings", icon: <ClipboardList className="text-crimson-400" /> },
+  { name: "All Venues", path: "Allvenues", icon: <ClipboardList className="text-green-400" /> },
+  { name: "All Medias", path: "AllMedia", icon: <User className="text-red-400" /> },
+  { name: "All Events", path: "AllEvents", icon: <DollarSign className="text-yellow-400" /> },
+  { name: "All Ticket Types", path: "ticketTypes", icon: <Ticket className="text-purple-400" /> },
+  { name: "My Profile", path: "adminprofile", icon: <User className="text-purple-400" /> },
   { name: "Logout", path: "#", icon: <LogOut className="text-red-500" /> },
 ];
 
 export const AdminSideNav = () => {
- const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const handleLogout = () => {
-    dispatch(clearCredentials())
+    dispatch(clearCredentials());
   };
 
   return (
@@ -41,15 +47,12 @@ export const AdminSideNav = () => {
             key={index}
             to={item.path}
             className="flex items-center gap-3 px-4 py-2 rounded hover:bg-gray-800 transition"
-          
             aria-label={`Go to ${item.name}`}
           >
             {item.icon}
             <span>{item.name}</span>
           </NavLink>
-          
         )
-        
       )}
     </aside>
   );

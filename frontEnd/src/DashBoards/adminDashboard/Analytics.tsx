@@ -66,10 +66,10 @@ const isWithinRange = (dateStr: string, start: Date, end: Date): boolean => {
 export const Analytics = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
-  const { data: users = [], isLoading: usersLoading } = userApi.useGetAllUsersProfilesQuery(undefined, { skip: !isAuthenticated });
-  const { data: events = [], isLoading: eventsLoading } = eventApi.useGetAllEventsQuery(undefined, { skip: !isAuthenticated });
+  const { data: users = [], isLoading: usersLoading } = userApi.useGetAllUsersProfilesQuery( { skip: !isAuthenticated });
+  const { data: events = [], isLoading: eventsLoading } = eventApi.useGetAllEventsQuery( { skip: !isAuthenticated });
   const { data: bookings = [], isLoading: bookingsLoading } = bookingApi.useGetAllBookingsQuery(undefined, { skip: !isAuthenticated });
-  const { data: tickets = [], isLoading: ticketsLoading } = ticketApi.useGetAllTicketTypesQuery(undefined, { skip: !isAuthenticated });
+  const { data: tickets = [], isLoading: ticketsLoading } = ticketApi.useGetAllTicketTypesQuery( { skip: !isAuthenticated });
 
   const isChartLoading = usersLoading || eventsLoading || bookingsLoading || ticketsLoading;
 

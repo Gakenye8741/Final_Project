@@ -5,28 +5,37 @@ import App from "../content-folders/Home/HeroHomeSection";
 import { PopularEvents } from "../content-folders/Home/PopularEvents";
 import { VenueList } from "../content-folders/Home/Venue";
 
-
-import { Fade } from "react-awesome-reveal"; // You can choose different effects here
+import { Fade, Slide, Zoom } from "react-awesome-reveal"; // Add more animations if needed
 
 export const Home = () => {
   return (
     <div>
-      {/* Navbar usually doesn't need a scroll animation unless it's a special effect */}
       <Navbar />
 
-      <Fade triggerOnce={true} cascade damping={0.1}>
+      {/* Hero Section - Fade In from Bottom */}
+      <Fade triggerOnce cascade damping={0.1}>
         <App />
       </Fade>
 
-      <EventCard/>
+      {/* Event Card Section - Slide In from Left */}
+      <Slide triggerOnce direction="left" duration={600}>
+        <EventCard />
+      </Slide>
 
-      {/* Venue List section with another fade-in, perhaps with a slight delay */}
-      <Fade triggerOnce={true} delay={300}>
+      {/* Venue List Section - Zoom In with Delay */}
+      <Zoom triggerOnce delay={300} duration={700}>
         <VenueList />
+      </Zoom>
+
+      {/* Popular Events - Slide In from Right */}
+      <Slide triggerOnce direction="right" duration={600}>
+        <PopularEvents />
+      </Slide>
+
+      {/* Footer - Simple Fade In */}
+      <Fade triggerOnce delay={200}>
+        <Footer />
       </Fade>
-      <PopularEvents/>
-       <Footer/>
     </div>
-   
   );
 };

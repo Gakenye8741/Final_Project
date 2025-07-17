@@ -11,8 +11,9 @@ import { eventRouter } from './services/events/events.route';
 import { bookingRouter } from './services/bookings/bookings.route';
 import { paymentRouter } from './services/payments/payments.route';
 import { authRouter } from './auth/auth.route';
-import { rateLimiterMiddleware } from './middleware/rate-limiter';
-import { ticketRouter } from './services/TicketType/ticket.Route';
+// import { rateLimiterMiddleware } from './middleware/rate-limiter';
+import { ticketRouter } from './services/TicketType/ticket.route';
+import mediaRouter from './services/media/media.route';
 
 
 dotenv.config();
@@ -27,7 +28,7 @@ app.use(cors())
 
 
 // Rate Limiter Middleware
-app.use(rateLimiterMiddleware);
+// app.use(rateLimiterMiddleware);
 
 // ✅ Default route
 app.get('/', (_req, res: Response) => {
@@ -44,6 +45,7 @@ app.use('/api',eventRouter)
 app.use('/api', bookingRouter)
 app.use('/api', paymentRouter)
 app.use('/api', ticketRouter)
+app.use('/api/media', mediaRouter)
 
 // ✅ Start server
 app.listen(PORT, () => {

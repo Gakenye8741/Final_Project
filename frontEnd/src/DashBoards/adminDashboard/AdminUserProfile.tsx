@@ -35,7 +35,7 @@ export const AdminUserProfile = () => {
       navigate('/login');
     }
   }, [isAuthenticated, role, navigate]);
-
+   
   const {
     register,
     handleSubmit,

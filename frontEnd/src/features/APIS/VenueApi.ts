@@ -18,6 +18,7 @@ export const venueApi = createApi({
   refetchOnMountOrArgChange: true,
 
   tagTypes: ['venues', 'venue'],
+
   endpoints: (builder) => ({
     // ➕ Create Venue
     createVenue: builder.mutation({
@@ -26,18 +27,20 @@ export const venueApi = createApi({
         method: 'POST',
         body: createVenuePayload,
       }),
-      invalidatesTags: ['venues'],
+      invalidatesTags: [{ type: 'venues', id: 'LIST' }],
     }),
 
     // 🔄 Update Venue
     updateVenue: builder.mutation({
-      // ⬇️ Using `venueId` instead of `id` to match frontend payload
       query: ({ venueId, ...body }) => ({
-        url: `venues/${venueId}`, // ✅ Correctly uses venueId
+        url: `venues/${venueId}`,
         method: 'PUT',
         body,
       }),
-      invalidatesTags: ['venues'],
+      invalidatesTags: (result, error, { venueId }) => [
+        { type: 'venues', id: venueId },
+        { type: 'venues', id: 'LIST' },
+      ],
     }),
 
     // 🗑️ Delete Venue
@@ -46,13 +49,25 @@ export const venueApi = createApi({
         url: `venues/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['venues'],
+      invalidatesTags: (result, error, id) => [
+        { type: 'venues', id },
+        { type: 'venues', id: 'LIST' },
+      ],
     }),
 
     // 📥 Get All Venues
     getAllVenues: builder.query({
       query: () => 'venues',
-      providesTags: ['venues'],
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map((venue: { venueId: number }) => ({
+                type: 'venues' as const,
+                id: venue.venueId,
+              })),
+              { type: 'venues', id: 'LIST' },
+            ]
+          : [{ type: 'venues', id: 'LIST' }],
     }),
 
     // 🔍 Get Venue By Name

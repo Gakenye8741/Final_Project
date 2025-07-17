@@ -1,4 +1,3 @@
-
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './App.css'
 import { Home } from './pages/Home'
@@ -12,40 +11,45 @@ import ProtectedRoutes from './components/ProtectedRoutes'
 import Error from './pages/Error'
 import UserProfile from './DashBoards/dashboard/UserProfile'
 import { Analytics } from './DashBoards/adminDashboard/Analytics'
-import {AdminUserProfile} from '../src/DashBoards/adminDashboard/AdminUserProfile'
+import { AdminUserProfile } from '../src/DashBoards/adminDashboard/AdminUserProfile'
 import { AllUsers } from './DashBoards/adminDashboard/AllUsers'
-import {AllVenues }from './DashBoards/adminDashboard/AllVenues'
+import { AllVenues } from './DashBoards/adminDashboard/AllVenues'
 import { EventDetailsPage } from './DashBoards/adminDashboard/AllEvents'
 import BookingsByNationalId from './DashBoards/dashboard/BookingsById'
 import { TicketTypes } from './DashBoards/adminDashboard/getAllTicketTypes'
 import { AllBookings } from './DashBoards/adminDashboard/AllBookings'
 
+// ✅ Import the new EventDetailPage
+import { EventDetailPage } from '../src/content-folders/Events/eventPage' // Adjust the path if needed
+import AllMedia from './DashBoards/adminDashboard/AllMedias'
 
 function App() {
- 
-  const Router= createBrowserRouter([
+  const Router = createBrowserRouter([
     {
       path: '/',
-      element: <Home/>
+      element: <Home />,
     },
     {
       path: '/about',
-      element: <About/>
+      element: <About />,
     },
     {
-       path: '/events',
-      element: <Events/>
+      path: '/events',
+      element: <Events />,
     },
     {
-      path: "/login",
-      element:<Login/>
-    }
-  ,
-  {
-    path: '/register',
-    element: <Register/>
-  },
-  {
+      path: '/events/:id', // ✅ Route to single event detail page
+      element: <EventDetailPage />,
+    },
+    {
+      path: '/login',
+      element: <Login />,
+    },
+    {
+      path: '/register',
+      element: <Register />,
+    },
+    {
       path: 'dashboard',
       element: (
         <ProtectedRoutes>
@@ -55,15 +59,14 @@ function App() {
       errorElement: <Error />,
       children: [
         {
-          path: "me",
+          path: 'me',
           element: <UserProfile />,
         },
         {
-          path: "MyBookings",
-          element: <BookingsByNationalId/>
-        }
-      
-      ]
+          path: 'MyBookings',
+          element: <BookingsByNationalId />,
+        },
+      ],
     },
     {
       path: 'admindashboard',
@@ -75,44 +78,42 @@ function App() {
       errorElement: <Error />,
       children: [
         {
-          path: "analytics",
+          path: 'analytics',
           element: <Analytics />,
         },
         {
-          path: "AllBookings",
-          element: <AllBookings/>,
-        },
-
-        {
-          path: "allusers",
-          element: <AllUsers/>
+          path: 'AllMedia',
+          element: <AllMedia/>
         },
         {
-          path: "AllVenues",
-          element: <AllVenues/>
+          path: 'AllBookings',
+          element: <AllBookings />,
         },
         {
-          path: "AllEvents",
-          element: <EventDetailsPage/>
+          path: 'allusers',
+          element: <AllUsers />,
         },
         {
-          path: "ticketTypes",
-          element: <TicketTypes/>
+          path: 'AllVenues',
+          element: <AllVenues />,
         },
         {
-          path: "adminprofile",
+          path: 'AllEvents',
+          element: <EventDetailsPage />,
+        },
+        {
+          path: 'ticketTypes',
+          element: <TicketTypes />,
+        },
+        {
+          path: 'adminprofile',
           element: <AdminUserProfile />,
         },
-        
-      ]
+      ],
     },
-    ])
+  ]);
 
-  return (
-   <>
-     <RouterProvider router={Router}/>
-   </>
-  )
+  return <RouterProvider router={Router} />;
 }
 
-export default App
+export default App;

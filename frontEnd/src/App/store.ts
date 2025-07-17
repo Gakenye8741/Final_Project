@@ -7,6 +7,7 @@ import { eventApi } from "../features/APIS/EventsApi";
 import { venueApi } from "../features/APIS/VenueApi";
 import { bookingApi } from "../features/APIS/BookingsApi";
 import { ticketApi } from "../features/APIS/ticketsType.Api";
+import { mediaApi } from "../features/APIS/mediaApi";
 // Create Persist Configuration for auth Slice
 
  const authPersistConfiguration ={
@@ -25,12 +26,13 @@ export const store = configureStore({
         [venueApi.reducerPath]: venueApi.reducer,
         [bookingApi.reducerPath]: bookingApi.reducer,
         [ticketApi.reducerPath]: ticketApi.reducer,
+        [mediaApi.reducerPath]: mediaApi.reducer,
         auth: persistedAuthReducer,
     },
     middleware: (getDefaultMiddleware)=>
         getDefaultMiddleware({
             serializableCheck: false
-        }).concat(userApi.middleware,eventApi.middleware,venueApi.middleware,bookingApi.middleware,ticketApi.middleware)
+        }).concat(userApi.middleware,eventApi.middleware,venueApi.middleware,bookingApi.middleware,ticketApi.middleware,mediaApi.middleware)
 })
 
 export const persister = persistStore(store);

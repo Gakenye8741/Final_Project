@@ -250,6 +250,8 @@ import withReactContent from "sweetalert2-react-content";
 import { PuffLoader } from "react-spinners";
 import { bookingApi } from "../../features/APIS/BookingsApi";
 import { eventApi } from "../../features/APIS/EventsApi";
+import { FaEdit } from "react-icons/fa";
+import { FaDeleteLeft, FaX } from "react-icons/fa6";
 
 const MySwal = withReactContent(Swal);
 
@@ -468,15 +470,15 @@ export const AllBookings: React.FC = () => {
                       <button
                         onClick={() => openStatusModal(b)}
                         className="text-xs px-2 py-1 bg-blue-600 rounded hover:bg-blue-700"
-                      >Edit</button>
+                      ><FaEdit/></button>
                       <button
                         onClick={() => handleCancel(b.bookingId)}
                         className="text-xs px-2 py-1 bg-yellow-600 rounded hover:bg-yellow-700"
-                      >Cancel</button>
+                      ><FaX/></button>
                       <button
                         onClick={() => handleDelete(b.bookingId)}
                         className="text-xs px-2 py-1 bg-red-600 rounded hover:bg-red-700"
-                      >Delete</button>
+                      ><FaDeleteLeft/></button>
                     </td>
                   </tr>
                 ))}

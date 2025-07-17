@@ -1,5 +1,6 @@
 CREATE TYPE "public"."bookingStatus" AS ENUM('Pending', 'Confirmed', 'Cancelled');--> statement-breakpoint
 CREATE TYPE "public"."eventStatus" AS ENUM('in_progress', 'ended', 'cancelled', 'upcoming');--> statement-breakpoint
+CREATE TYPE "public"."mediaType" AS ENUM('image', 'video');--> statement-breakpoint
 CREATE TYPE "public"."paymentStatus" AS ENUM('Pending', 'Completed', 'Failed');--> statement-breakpoint
 CREATE TYPE "public"."role" AS ENUM('user', 'admin');--> statement-breakpoint
 CREATE TYPE "public"."status" AS ENUM('Open', 'In Progress', 'Resolved', 'Closed');--> statement-breakpoint
@@ -32,6 +33,17 @@ CREATE TABLE "events" (
 	"cancellationPolicy" text,
 	"createdAt" timestamp DEFAULT now() NOT NULL,
 	"updatedAt" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "media" (
+	"mediaId" serial PRIMARY KEY NOT NULL,
+	"eventId" integer,
+	"venueId" integer,
+	"url" varchar(500) NOT NULL,
+	"type" "mediaType" NOT NULL,
+	"altText" varchar(255),
+	"uploadedAt" timestamp DEFAULT now() NOT NULL,
+	"createdAt" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "payments" (
@@ -92,6 +104,8 @@ ALTER TABLE "bookings" ADD CONSTRAINT "bookings_nationalId_users_nationalId_fk" 
 ALTER TABLE "bookings" ADD CONSTRAINT "bookings_eventId_events_eventId_fk" FOREIGN KEY ("eventId") REFERENCES "public"."events"("eventId") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "bookings" ADD CONSTRAINT "bookings_ticketTypeId_ticketTypes_ticketTypeId_fk" FOREIGN KEY ("ticketTypeId") REFERENCES "public"."ticketTypes"("ticketTypeId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "events" ADD CONSTRAINT "events_venueId_venues_venueId_fk" FOREIGN KEY ("venueId") REFERENCES "public"."venues"("venueId") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "media" ADD CONSTRAINT "media_eventId_events_eventId_fk" FOREIGN KEY ("eventId") REFERENCES "public"."events"("eventId") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "media" ADD CONSTRAINT "media_venueId_venues_venueId_fk" FOREIGN KEY ("venueId") REFERENCES "public"."venues"("venueId") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "payments" ADD CONSTRAINT "payments_bookingId_bookings_bookingId_fk" FOREIGN KEY ("bookingId") REFERENCES "public"."bookings"("bookingId") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "supportTickets" ADD CONSTRAINT "supportTickets_nationalId_users_nationalId_fk" FOREIGN KEY ("nationalId") REFERENCES "public"."users"("nationalId") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "ticketTypes" ADD CONSTRAINT "ticketTypes_eventId_events_eventId_fk" FOREIGN KEY ("eventId") REFERENCES "public"."events"("eventId") ON DELETE cascade ON UPDATE no action;

@@ -21,7 +21,8 @@ export const bookingStatusEnum = pgEnum("bookingStatus", ["Pending", "Confirmed"
 export const paymentStatusEnum = pgEnum("paymentStatus", ["Pending", "Completed", "Failed"]);
 export const ticketStatusEnum = pgEnum("status", ["Open", "In Progress", "Resolved", "Closed"]);
 export const venueStatusEnum = pgEnum("venueStatus", ["available", "booked"]);
-export const eventStatusEnum = pgEnum("eventStatus", ["in_progress", "ended", "cancelled", "upcoming"]); // ✅ NEW ENUM
+export const eventStatusEnum = pgEnum("eventStatus", ["in_progress", "ended", "cancelled", "upcoming"]);
+export const mediaTypeEnum = pgEnum("mediaType", ["image", "video"]); // ✅ NEW ENUM
 
 // =======================
 // USERS
@@ -68,8 +69,8 @@ export const events = pgTable("events", {
   ticketPrice: decimal("ticketPrice", { precision: 10, scale: 2 }).notNull(),
   ticketsTotal: integer("ticketsTotal").notNull(),
   ticketsSold: integer("ticketsSold").default(0),
-  status: eventStatusEnum("eventStatus").default("in_progress").notNull(), // ✅ NEW FIELD
-  cancellationPolicy: text("cancellationPolicy"), // ✅ UPDATED FIELD
+  status: eventStatusEnum("eventStatus").default("in_progress").notNull(),
+  cancellationPolicy: text("cancellationPolicy"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
@@ -96,14 +97,13 @@ export const bookings = pgTable("bookings", {
   nationalId: integer("nationalId").references(() => users.nationalId, { onDelete: "cascade" }),
   eventId: integer("eventId").references(() => events.eventId, { onDelete: "cascade" }),
   ticketTypeId: integer("ticketTypeId").references(() => ticketTypes.ticketTypeId),
-  ticketTypeName: varchar("ticketTypeName", { length: 100 }), // Store ticket name here
+  ticketTypeName: varchar("ticketTypeName", { length: 100 }),
   quantity: integer("quantity").notNull(),
   totalAmount: decimal("totalAmount", { precision: 10, scale: 2 }).notNull(),
   bookingStatus: bookingStatusEnum("bookingStatus").default("Pending").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
-
 
 // =======================
 // PAYMENTS
@@ -136,6 +136,21 @@ export const supportTickets = pgTable("supportTickets", {
 });
 
 // =======================
+// MEDIA
+// =======================
+
+export const media = pgTable("media", {
+  mediaId: serial("mediaId").primaryKey(),
+  eventId: integer("eventId").references(() => events.eventId, { onDelete: "cascade" }),
+  venueId: integer("venueId").references(() => venues.venueId, { onDelete: "cascade" }),
+  url: varchar("url", { length: 500 }).notNull(),
+  type: mediaTypeEnum("type").notNull(),
+  altText: varchar("altText", { length: 255 }),
+  uploadedAt: timestamp("uploadedAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+// =======================
 // RELATIONS
 // =======================
 
@@ -146,6 +161,7 @@ export const usersRelations = relations(users, ({ many }) => ({
 
 export const venuesRelations = relations(venues, ({ many }) => ({
   events: many(events),
+  media: many(media),
 }));
 
 export const eventsRelations = relations(events, ({ one, many }) => ({
@@ -155,6 +171,7 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
   }),
   bookings: many(bookings),
   ticketTypes: many(ticketTypes),
+  media: many(media),
 }));
 
 export const ticketTypesRelations = relations(ticketTypes, ({ one }) => ({
@@ -194,6 +211,17 @@ export const supportTicketsRelations = relations(supportTickets, ({ one }) => ({
   }),
 }));
 
+export const mediaRelations = relations(media, ({ one }) => ({
+  event: one(events, {
+    fields: [media.eventId],
+    references: [events.eventId],
+  }),
+  venue: one(venues, {
+    fields: [media.venueId],
+    references: [venues.venueId],
+  }),
+}));
+
 // =======================
 // TYPES
 // =======================
@@ -218,3 +246,6 @@ export type TInsertPayment = typeof payments.$inferInsert;
 
 export type TSelectSupportTicket = typeof supportTickets.$inferSelect;
 export type TInsertSupportTicket = typeof supportTickets.$inferInsert;
+
+export type TSelectMedia = typeof media.$inferSelect;
+export type TInsertMedia = typeof media.$inferInsert;
