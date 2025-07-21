@@ -22,7 +22,8 @@ export const paymentStatusEnum = pgEnum("paymentStatus", ["Pending", "Completed"
 export const ticketStatusEnum = pgEnum("status", ["Open", "In Progress", "Resolved", "Closed"]);
 export const venueStatusEnum = pgEnum("venueStatus", ["available", "booked"]);
 export const eventStatusEnum = pgEnum("eventStatus", ["in_progress", "ended", "cancelled", "upcoming"]);
-export const mediaTypeEnum = pgEnum("mediaType", ["image", "video"]); // ✅ NEW ENUM
+export const mediaTypeEnum = pgEnum("mediaType", ["image", "video"]);
+export const priorityEnum = pgEnum("priority", ["Low", "Medium", "High"]);
 
 // =======================
 // USERS
@@ -112,6 +113,9 @@ export const bookings = pgTable("bookings", {
 export const payments = pgTable("payments", {
   paymentId: serial("paymentId").primaryKey(),
   bookingId: integer("bookingId").references(() => bookings.bookingId, { onDelete: "cascade" }),
+  nationalId: integer("nationalId")
+    .notNull()
+    .references(() => users.nationalId, { onDelete: "cascade" }),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   paymentStatus: paymentStatusEnum("paymentStatus").default("Pending").notNull(),
   paymentDate: timestamp("paymentDate").defaultNow().notNull(),
@@ -131,6 +135,7 @@ export const supportTickets = pgTable("supportTickets", {
   subject: varchar("subject", { length: 255 }).notNull(),
   description: text("description").notNull(),
   status: ticketStatusEnum("status").default("Open").notNull(),
+  priority: priorityEnum("priority").default("Medium").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
@@ -147,6 +152,22 @@ export const media = pgTable("media", {
   type: mediaTypeEnum("type").notNull(),
   altText: varchar("altText", { length: 255 }),
   uploadedAt: timestamp("uploadedAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+// =======================
+// RESPONSES
+// =======================
+
+export const responses = pgTable("responses", {
+  responseId: serial("responseId").primaryKey(),
+  ticketId: integer("ticketId")
+    .references(() => supportTickets.ticketId, { onDelete: "cascade" })
+    .notNull(),
+  nationalId: integer("nationalId")
+    .references(() => users.nationalId, { onDelete: "cascade" })
+    .notNull(),
+  message: text("message").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
@@ -202,13 +223,18 @@ export const paymentsRelations = relations(payments, ({ one }) => ({
     fields: [payments.bookingId],
     references: [bookings.bookingId],
   }),
+  user: one(users, {
+    fields: [payments.nationalId],
+    references: [users.nationalId],
+  }),
 }));
 
-export const supportTicketsRelations = relations(supportTickets, ({ one }) => ({
+export const supportTicketsRelations = relations(supportTickets, ({ one, many }) => ({
   user: one(users, {
     fields: [supportTickets.nationalId],
     references: [users.nationalId],
   }),
+  responses: many(responses),
 }));
 
 export const mediaRelations = relations(media, ({ one }) => ({
@@ -219,6 +245,17 @@ export const mediaRelations = relations(media, ({ one }) => ({
   venue: one(venues, {
     fields: [media.venueId],
     references: [venues.venueId],
+  }),
+}));
+
+export const responsesRelations = relations(responses, ({ one }) => ({
+  ticket: one(supportTickets, {
+    fields: [responses.ticketId],
+    references: [supportTickets.ticketId],
+  }),
+  user: one(users, {
+    fields: [responses.nationalId],
+    references: [users.nationalId],
   }),
 }));
 
@@ -249,3 +286,6 @@ export type TInsertSupportTicket = typeof supportTickets.$inferInsert;
 
 export type TSelectMedia = typeof media.$inferSelect;
 export type TInsertMedia = typeof media.$inferInsert;
+
+export type TSelectResponse = typeof responses.$inferSelect;
+export type TInsertResponse = typeof responses.$inferInsert;

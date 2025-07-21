@@ -1,23 +1,24 @@
-
-// routes/payment.routes.ts
-
 import { Router } from "express";
 import {
   getAllPayments,
   getPaymentById,
   getPaymentsByBookingId,
   getPaymentsByStatus,
+  getPaymentsByNationalId, // ✅ Added this
   createPayment,
   updatePayment,
   deletePayment,
+  createCheckoutSession,
 } from "./payment.controller"; 
+import { webhookHandler } from "./payment.webhook";
 
 export const paymentRouter = Router();
 
-// Payment routes definition
-
 // Search payments by status ("Pending", "Completed", "Failed")
 paymentRouter.get("/payments-status-search", getPaymentsByStatus);
+
+// ✅ Get payments by national ID
+paymentRouter.get("/payments/national-id/:nationalId", getPaymentsByNationalId);
 
 // Get all payments
 paymentRouter.get("/payments", getAllPayments);
@@ -31,9 +32,13 @@ paymentRouter.get("/payments/booking/:bookingId", getPaymentsByBookingId);
 // Create a new payment
 paymentRouter.post("/payments", createPayment);
 
-// Update an existing payment
-// Note: Using :id for consistency in PUT/DELETE for individual resources
+// Update payment
 paymentRouter.put("/payments/:id", updatePayment);
 
-// Delete an existing payment
+// Delete payment
 paymentRouter.delete("/payments/:id", deletePayment);
+
+// Stripe Checkout Session
+paymentRouter.post("/payments/create-session", createCheckoutSession);
+
+paymentRouter.post('/payment/webhook' ,webhookHandler)

@@ -22,6 +22,12 @@ import { AllBookings } from './DashBoards/adminDashboard/AllBookings'
 // ✅ Import the new EventDetailPage
 import { EventDetailPage } from '../src/content-folders/Events/eventPage' // Adjust the path if needed
 import AllMedia from './DashBoards/adminDashboard/AllMedias'
+import UserSupportTickets from './DashBoards/dashboard/SupportTickets'
+import AdminSupportTickets from './DashBoards/adminDashboard/AllTicketSupport'
+import ContactForm from './pages/Contact'
+import GetPaymentsByNationalId from './DashBoards/dashboard/GetPaymentsByNationalId'
+import AllPayments from './DashBoards/adminDashboard/GetAllPayments'
+
 
 function App() {
   const Router = createBrowserRouter([
@@ -50,6 +56,10 @@ function App() {
       element: <Register />,
     },
     {
+      path: '/contact',
+      element: <ContactForm/>
+    },
+    {
       path: 'dashboard',
       element: (
         <ProtectedRoutes>
@@ -65,6 +75,14 @@ function App() {
         {
           path: 'MyBookings',
           element: <BookingsByNationalId />,
+        },
+        {
+          path: 'supportTickets',
+          element: <UserSupportTickets />,
+        },
+         {
+          path: 'Payments',
+          element: <GetPaymentsByNationalId />,
         },
       ],
     },
@@ -90,6 +108,10 @@ function App() {
           element: <AllBookings />,
         },
         {
+          path: 'supportTickets',
+          element: <AdminSupportTickets/>,
+        },
+        {
           path: 'allusers',
           element: <AllUsers />,
         },
@@ -104,6 +126,10 @@ function App() {
         {
           path: 'ticketTypes',
           element: <TicketTypes />,
+        },
+         {
+          path: 'AllPayments',
+          element: <AllPayments />,
         },
         {
           path: 'adminprofile',

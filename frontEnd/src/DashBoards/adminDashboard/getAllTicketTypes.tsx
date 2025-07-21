@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2'; 
-import { useGetAllTicketTypesQuery, useUpdateTicketTypeMutation, useDeleteTicketTypeMutation, useCreateTicketTypeMutation } from '../../features/APIS/ticketsType.Api'; 
-import { eventApi } from '../../features/APIS/EventsApi'; 
+import Swal from 'sweetalert2';
+import {
+  useGetAllTicketTypesQuery,
+  useUpdateTicketTypeMutation,
+  useDeleteTicketTypeMutation,
+  useCreateTicketTypeMutation,
+} from '../../features/APIS/ticketsType.Api';
+import { eventApi } from '../../features/APIS/EventsApi';
 
 import type { RootState } from '../../App/store';
 
@@ -17,15 +22,14 @@ export const TicketTypes = () => {
   const [createTicketType, { isLoading: isCreating }] = useCreateTicketTypeMutation();
 
   const [eventNames, setEventNames] = useState<Record<number, string>>({});
-  
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentTicket, setCurrentTicket] = useState<any>(null);
-  
-  const [editFormData, setEditFormData] = useState({ 
-    name: '', 
-    price: '', 
+
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    price: '',
     quantity: '',
-    eventId: '' 
+    eventId: '',
   });
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -33,8 +37,11 @@ export const TicketTypes = () => {
     name: '',
     price: '',
     quantity: '',
-    eventId: ''
+    eventId: '',
   });
+
+  const [filterText, setFilterText] = useState('');
+  const [filterEventId, setFilterEventId] = useState('');
 
   const { data: allEvents, isLoading: isEventsLoading } = eventApi.useGetAllEventsQuery({});
 
@@ -48,7 +55,7 @@ export const TicketTypes = () => {
     if (allEvents) {
       const eventsMap: Record<number, string> = {};
       allEvents.forEach((event: any) => {
-        eventsMap[event.eventId] = event.title; 
+        eventsMap[event.eventId] = event.title;
       });
       setEventNames(eventsMap);
     }
@@ -62,7 +69,7 @@ export const TicketTypes = () => {
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'Yes, delete it!',
     });
 
     if (result.isConfirmed) {
@@ -73,7 +80,7 @@ export const TicketTypes = () => {
           title: 'Deleted!',
           text: 'Ticket type deleted successfully.',
           timer: 2000,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
       } catch (err) {
         console.error('Failed to delete ticket type:', err);
@@ -88,7 +95,7 @@ export const TicketTypes = () => {
       name: ticket.name,
       price: ticket.price,
       quantity: ticket.quantity,
-      eventId: ticket.eventId.toString()
+      eventId: ticket.eventId.toString(),
     });
     setIsEditModalOpen(true);
   };
@@ -112,7 +119,7 @@ export const TicketTypes = () => {
       name,
       price: parseFloat(price),
       quantity: parseInt(quantity),
-      eventId: parseInt(eventId)
+      eventId: parseInt(eventId),
     };
 
     try {
@@ -122,7 +129,7 @@ export const TicketTypes = () => {
         title: 'Updated!',
         text: 'Ticket type updated successfully.',
         timer: 2000,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
       setIsEditModalOpen(false);
       setCurrentTicket(null);
@@ -149,7 +156,7 @@ export const TicketTypes = () => {
       name,
       price: parseFloat(price),
       quantity: parseInt(quantity),
-      eventId: parseInt(eventId)
+      eventId: parseInt(eventId),
     };
 
     try {
@@ -159,7 +166,7 @@ export const TicketTypes = () => {
         title: 'Created!',
         text: 'New ticket type created successfully.',
         timer: 2000,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
       setIsCreateModalOpen(false);
       setCreateFormData({ name: '', price: '', quantity: '', eventId: '' });
@@ -183,47 +190,78 @@ export const TicketTypes = () => {
           </button>
         </div>
 
+        <div className="mb-6 flex flex-col md:flex-row items-center gap-4">
+          <input
+            type="text"
+            placeholder="Search by ticket name..."
+            value={filterText}
+            onChange={(e) => setFilterText(e.target.value)}
+            className="input input-bordered w-full md:w-1/2 bg-gray-700 text-white"
+          />
+          <select
+            value={filterEventId}
+            onChange={(e) => setFilterEventId(e.target.value)}
+            className="select select-bordered w-full md:w-1/3 bg-gray-700 text-white"
+          >
+            <option value="">All Events</option>
+            {allEvents?.map((event: any) => (
+              <option key={event.eventId} value={event.eventId}>
+                {event.title}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {isLoading || isEventsLoading ? (
           <p className="text-gray-400">Loading ticket types...</p>
         ) : error ? (
           <p className="text-red-500">Failed to load ticket types</p>
         ) : (
           <div className="space-y-4">
-            {ticketTypes?.map((ticket: any) => {
-              const eventName = eventNames[ticket.eventId] || 'Unknown Event';
+            {ticketTypes
+              ?.filter((ticket: any) => {
+                const matchesName = ticket.name.toLowerCase().includes(filterText.toLowerCase());
+                const matchesEvent = filterEventId
+                  ? ticket.eventId === parseInt(filterEventId)
+                  : true;
+                return matchesName && matchesEvent;
+              })
+              .map((ticket: any) => {
+                const eventName = eventNames[ticket.eventId] || 'Unknown Event';
 
-              return (
-                <div 
-                  key={ticket.ticketTypeId} 
-                  className="bg-white/5 backdrop-blur-xl border border-orange-400/20 p-4 rounded-xl shadow-xl transition-all duration-300 hover:shadow-2xl hover:border-orange-400"
-                >
-                  <h4 className="text-xl font-bold text-orange-400">{ticket.name}</h4>
-                  <p className="text-gray-300">Price: ${ticket.price}</p>
-                  <p className="text-gray-300">Quantity Available: {ticket.quantity}</p>
-                  <p className="text-gray-400 font-semibold italic">Event Name: {eventName}</p>
-                  
-                  <div className="mt-4 flex space-x-4">
-                    <button 
-                      onClick={() => handleEditClick(ticket)}
-                      className="btn bg-orange-500 text-white hover:bg-orange-600"
-                    >
-                      Edit
-                    </button>
-                    <button 
-                      onClick={() => handleDeleteTicketType(ticket.ticketTypeId)}
-                      className="btn bg-red-500 text-white hover:bg-red-600"
-                      disabled={isDeleting}
-                    >
-                      {isDeleting ? 'Deleting...' : 'Delete'}
-                    </button>
+                return (
+                  <div
+                    key={ticket.ticketTypeId}
+                    className="bg-white/5 backdrop-blur-xl border border-orange-400/20 p-4 rounded-xl shadow-xl transition-all duration-300 hover:shadow-2xl hover:border-orange-400"
+                  >
+                    <h4 className="text-xl font-bold text-orange-400">{ticket.name}</h4>
+                    <p className="text-gray-300">Price: ${ticket.price}</p>
+                    <p className="text-gray-300">Quantity Available: {ticket.quantity}</p>
+                    <p className="text-gray-400 font-semibold italic">Event Name: {eventName}</p>
+
+                    <div className="mt-4 flex space-x-4">
+                      <button
+                        onClick={() => handleEditClick(ticket)}
+                        className="btn bg-orange-500 text-white hover:bg-orange-600"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteTicketType(ticket.ticketTypeId)}
+                        className="btn bg-red-500 text-white hover:bg-red-600"
+                        disabled={isDeleting}
+                      >
+                        {isDeleting ? 'Deleting...' : 'Delete'}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
         )}
       </div>
 
+      {/* Edit Modal */}
       {isEditModalOpen && (
         <dialog id="edit_ticket_modal" className="modal modal-open">
           <div className="modal-box bg-gray-800 text-white">
@@ -241,7 +279,9 @@ export const TicketTypes = () => {
                   }
                   required
                 >
-                  <option value="" disabled>Select an Event</option>
+                  <option value="" disabled>
+                    Select an Event
+                  </option>
                   {allEvents?.map((event: any) => (
                     <option key={event.eventId} value={event.eventId}>
                       {event.title}
@@ -258,9 +298,7 @@ export const TicketTypes = () => {
                   type="text"
                   className="input input-bordered w-full bg-gray-700 text-white"
                   value={editFormData.name}
-                  onChange={(e) =>
-                    setEditFormData({ ...editFormData, name: e.target.value })
-                  }
+                  onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
                   required
                 />
               </div>
@@ -274,9 +312,7 @@ export const TicketTypes = () => {
                   step="0.01"
                   className="input input-bordered w-full bg-gray-700 text-white"
                   value={editFormData.price}
-                  onChange={(e) =>
-                    setEditFormData({ ...editFormData, price: e.target.value })
-                  }
+                  onChange={(e) => setEditFormData({ ...editFormData, price: e.target.value })}
                   required
                 />
               </div>
@@ -300,9 +336,9 @@ export const TicketTypes = () => {
                 <button type="submit" className="btn btn-warning" disabled={isUpdating}>
                   {isUpdating ? 'Updating...' : 'Update Ticket'}
                 </button>
-                <button 
-                  type="button" 
-                  className="btn" 
+                <button
+                  type="button"
+                  className="btn"
                   onClick={() => {
                     setIsEditModalOpen(false);
                     setCurrentTicket(null);
@@ -317,6 +353,7 @@ export const TicketTypes = () => {
         </dialog>
       )}
 
+      {/* Create Modal */}
       {isCreateModalOpen && (
         <dialog id="create_ticket_modal" className="modal modal-open">
           <div className="modal-box bg-gray-800 text-white">
@@ -332,7 +369,9 @@ export const TicketTypes = () => {
                   onChange={(e) => setCreateFormData({ ...createFormData, eventId: e.target.value })}
                   required
                 >
-                  <option value="" disabled>Select an Event</option>
+                  <option value="" disabled>
+                    Select an Event
+                  </option>
                   {allEvents?.map((event: any) => (
                     <option key={event.eventId} value={event.eventId}>
                       {event.title}
@@ -376,7 +415,9 @@ export const TicketTypes = () => {
                   type="number"
                   className="input input-bordered w-full bg-gray-700 text-white"
                   value={createFormData.quantity}
-                  onChange={(e) => setCreateFormData({ ...createFormData, quantity: e.target.value })}
+                  onChange={(e) =>
+                    setCreateFormData({ ...createFormData, quantity: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -385,9 +426,9 @@ export const TicketTypes = () => {
                 <button type="submit" className="btn btn-success" disabled={isCreating}>
                   {isCreating ? 'Creating...' : 'Create Ticket'}
                 </button>
-                <button 
-                  type="button" 
-                  className="btn" 
+                <button
+                  type="button"
+                  className="btn"
                   onClick={() => setIsCreateModalOpen(false)}
                   disabled={isCreating}
                 >

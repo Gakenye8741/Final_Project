@@ -1,32 +1,35 @@
 import { NavLink } from "react-router-dom";
-import { 
-  TrendingUp, 
-  Users, 
-  ClipboardList, 
-  User, 
-  LogOut, 
-  DollarSign, 
-  Ticket 
+import {
+  TrendingUp,
+  Users,
+  ClipboardList,
+  User,
+  LogOut,
+  DollarSign,
+  Ticket,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { clearCredentials } from "../../features/Auth/AuthSlice";
 
 const navItems = [
   { name: "Analytics", path: "analytics", icon: <TrendingUp className="text-indigo-400" /> },
-  { name: "All Users", path: "AllUsers", icon: <Users className="text-blue-400" /> },
-  { name: "All Bookings", path: "AllBookings", icon: <ClipboardList className="text-crimson-400" /> },
-  { name: "All Venues", path: "Allvenues", icon: <ClipboardList className="text-green-400" /> },
-  { name: "All Medias", path: "AllMedia", icon: <User className="text-red-400" /> },
-  { name: "All Events", path: "AllEvents", icon: <DollarSign className="text-yellow-400" /> },
-  { name: "All Ticket Types", path: "ticketTypes", icon: <Ticket className="text-purple-400" /> },
+  { name: "Manage Users", path: "AllUsers", icon: <Users className="text-blue-400" /> },
+  { name: "Manage Bookings", path: "AllBookings", icon: <ClipboardList className="text-crimson-400" /> },
+  { name: "Manage Venues", path: "Allvenues", icon: <ClipboardList className="text-green-400" /> },
+  { name: "Manage Medias", path: "AllMedia", icon: <User className="text-red-400" /> },
+  { name: "Manage Events", path: "AllEvents", icon: <DollarSign className="text-yellow-400" /> },
+  { name: "Manage Paymnts", path: "AllPayments", icon: <User className="text-purple-400" /> },
+  { name: "Manage Support Tickets", path: "AllPayments", icon: <Ticket className="text-purple-400" /> },
+  { name: "Manage Ticket Types", path: "ticketTypes", icon: <Ticket className="text-purple-400" /> },
   { name: "My Profile", path: "adminprofile", icon: <User className="text-purple-400" /> },
   { name: "Logout", path: "#", icon: <LogOut className="text-red-500" /> },
 ];
 
-export const AdminSideNav = () => {
+export const AdminSideNav = ({ onNavItemClick }: { onNavItemClick?: () => void }) => {
   const dispatch = useDispatch();
   const handleLogout = () => {
     dispatch(clearCredentials());
+    onNavItemClick?.(); // Close drawer on mobile
   };
 
   return (
@@ -46,6 +49,7 @@ export const AdminSideNav = () => {
           <NavLink
             key={index}
             to={item.path}
+            onClick={onNavItemClick}
             className="flex items-center gap-3 px-4 py-2 rounded hover:bg-gray-800 transition"
             aria-label={`Go to ${item.name}`}
           >

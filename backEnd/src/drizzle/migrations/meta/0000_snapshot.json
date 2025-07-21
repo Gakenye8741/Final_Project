@@ -1,5 +1,5 @@
 {
-  "id": "162257cf-9a79-44e0-ab39-e7d6a215d449",
+  "id": "6d7364b8-2394-4710-8469-295cd27c5996",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -344,6 +344,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "nationalId": {
+          "name": "nationalId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
         "amount": {
           "name": "amount",
           "type": "numeric(10, 2)",
@@ -406,6 +412,90 @@
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
+        },
+        "payments_nationalId_users_nationalId_fk": {
+          "name": "payments_nationalId_users_nationalId_fk",
+          "tableFrom": "payments",
+          "tableTo": "users",
+          "columnsFrom": [
+            "nationalId"
+          ],
+          "columnsTo": [
+            "nationalId"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.responses": {
+      "name": "responses",
+      "schema": "",
+      "columns": {
+        "responseId": {
+          "name": "responseId",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "ticketId": {
+          "name": "ticketId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nationalId": {
+          "name": "nationalId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "message": {
+          "name": "message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "responses_ticketId_supportTickets_ticketId_fk": {
+          "name": "responses_ticketId_supportTickets_ticketId_fk",
+          "tableFrom": "responses",
+          "tableTo": "supportTickets",
+          "columnsFrom": [
+            "ticketId"
+          ],
+          "columnsTo": [
+            "ticketId"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "responses_nationalId_users_nationalId_fk": {
+          "name": "responses_nationalId_users_nationalId_fk",
+          "tableFrom": "responses",
+          "tableTo": "users",
+          "columnsFrom": [
+            "nationalId"
+          ],
+          "columnsTo": [
+            "nationalId"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -449,6 +539,14 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'Open'"
+        },
+        "priority": {
+          "name": "priority",
+          "type": "priority",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Medium'"
         },
         "createdAt": {
           "name": "createdAt",
@@ -724,6 +822,15 @@
         "Pending",
         "Completed",
         "Failed"
+      ]
+    },
+    "public.priority": {
+      "name": "priority",
+      "schema": "public",
+      "values": [
+        "Low",
+        "Medium",
+        "High"
       ]
     },
     "public.role": {

@@ -1,5 +1,4 @@
-
-import { desc, eq, ilike } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import db from "../../drizzle/db";
 import {
   supportTickets,
@@ -15,7 +14,9 @@ export const getAllSupportTicketService = async (): Promise<TSelectSupportTicket
 };
 
 // ✅ Get Ticket By ID
-export const getTicketByIdService = async (ticketId: number): Promise<TSelectSupportTicket | undefined> => {
+export const getTicketByIdService = async (
+  ticketId: number
+): Promise<TSelectSupportTicket | undefined> => {
   return db.query.supportTickets.findFirst({
     where: eq(supportTickets.ticketId, ticketId),
   });
@@ -26,7 +27,7 @@ export const getTicketWithAllIdServices = async (ticketId: number) => {
   return db.query.supportTickets.findFirst({
     where: eq(supportTickets.ticketId, ticketId),
     with: {
-      user: true, // assumes relation is defined
+      user: true,
     },
   });
 };
@@ -52,12 +53,22 @@ export const updateSupportTicketService = async (
 };
 
 // ✅ Delete a support ticket
-export const deleteSupportTicketService = async (ticketId: number): Promise<string> => {
+export const deleteSupportTicketService = async (
+  ticketId: number
+): Promise<string> => {
   await db.delete(supportTickets).where(eq(supportTickets.ticketId, ticketId));
   return "Support ticket deleted successfully ❌";
 };
 
-
-
-
-
+// ✅ Get all tickets by user's national ID
+export const getSupportTicketsByNationalIdService = async (
+  nationalId: number
+): Promise<TSelectSupportTicket[]> => {
+  return db.query.supportTickets.findMany({
+    where: eq(supportTickets.nationalId, nationalId),
+    with: {
+      user: true,
+    },
+    orderBy: [desc(supportTickets.ticketId)],
+  });
+};

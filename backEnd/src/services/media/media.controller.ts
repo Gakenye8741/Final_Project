@@ -8,7 +8,7 @@ import {
   createMediaService,
   updateMediaService,
   deleteMediaService,
-} from "../media/media.service";
+} from "./media.service";
 
 // ✅ GET /media
 export const getAllMediaController = async (req: Request, res: Response) => {

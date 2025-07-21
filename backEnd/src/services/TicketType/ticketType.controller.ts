@@ -6,7 +6,7 @@ import {
   getTicketTypeByIdService,
   getTicketTypesByEventIdService,
   updateTicketTypeService,
-} from "../TicketType/TicketType.service";
+} from "./TicketType.service";
 
 // 📥 Get all ticket types
 export const getAllTicketTypes = async (req: Request, res: Response) => {

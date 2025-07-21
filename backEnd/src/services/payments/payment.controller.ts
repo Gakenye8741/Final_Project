@@ -1,15 +1,19 @@
-// controllers/payment.controller.ts
-
 import { Request, Response } from "express";
 import {
   getAllPaymentsService,
   getPaymentByIdService,
   getPaymentsByBookingIdService,
   getPaymentsByStatusService,
+  getPaymentsByNationalIdService,
   createPaymentService,
   updatePaymentService,
   deletePaymentService,
 } from "./payment.service";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2025-06-30.basil",
+});
 
 // Get all payments
 export const getAllPayments = async (req: Request, res: Response) => {
@@ -63,6 +67,25 @@ export const getPaymentsByBookingId = async (req: Request, res: Response) => {
   }
 };
 
+// Get payments by national ID
+export const getPaymentsByNationalId = async (req: Request, res: Response) => {
+  const nationalId = parseInt(req.params.nationalId);
+  if (isNaN(nationalId)) {
+    res.status(400).json({ error: "🚫 Invalid national ID" });
+    return;
+  }
+  try {
+    const payments = await getPaymentsByNationalIdService(nationalId);
+    if (!payments || payments.length === 0) {
+      res.status(404).json({ message: `🔍 No payments found for national ID ${nationalId}` });
+    } else {
+      res.status(200).json(payments);
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: "🚫 " + (error.message || `Failed to retrieve payments for national ID ${nationalId}`) });
+  }
+};
+
 // Get payments by Status
 export const getPaymentsByStatus = async (req: Request, res: Response) => {
   const status = req.query.status as string;
@@ -76,7 +99,7 @@ export const getPaymentsByStatus = async (req: Request, res: Response) => {
   type PaymentStatus = typeof allowedStatuses[number];
 
   if (!allowedStatuses.includes(status as PaymentStatus)) {
-    res.status(400).json({ error: `🚫 Invalid status value. Allowed values are: ${allowedStatuses.join(", ")}` });
+    res.status(400).json({ error: `🚫 Invalid status value. Allowed values: ${allowedStatuses.join(", ")}` });
     return;
   }
 
@@ -92,32 +115,34 @@ export const getPaymentsByStatus = async (req: Request, res: Response) => {
   }
 };
 
-
 // Create new payment
 export const createPayment = async (req: Request, res: Response) => {
-  const { bookingId, amount, paymentStatus, paymentMethod, transactionId } = req.body;
+  const { bookingId, amount, paymentStatus, paymentMethod, transactionId, nationalId } = req.body;
 
-  if (!bookingId || !amount) {
-    res.status(400).json({ error: "⚠️ Essential fields (bookingId, amount) are required" });
+  if (!bookingId || !amount || !nationalId) {
+    res.status(400).json({ error: "⚠️ Required fields: bookingId, amount, nationalId" });
     return;
   }
 
   const parsedBookingId = parseInt(bookingId);
   const parsedAmount = parseFloat(amount);
+  const parsedNationalId = parseInt(nationalId);
 
-  if (isNaN(parsedBookingId) || isNaN(parsedAmount)) {
-    res.status(400).json({ error: "🚫 Invalid data types for bookingId or amount" });
+  if (isNaN(parsedBookingId) || isNaN(parsedAmount) || isNaN(parsedNationalId)) {
+    res.status(400).json({ error: "🚫 Invalid number format for bookingId, amount, or nationalId" });
     return;
   }
 
+  const newPayment = {
+    bookingId: parsedBookingId,
+    nationalId: parsedNationalId,
+    amount: parsedAmount.toString(),
+    paymentStatus: paymentStatus || "Pending",
+    paymentMethod: paymentMethod || null,
+    transactionId: transactionId || null,
+  };
+
   try {
-    const newPayment = {
-      bookingId: parsedBookingId,
-      amount: parsedAmount.toString(),
-      paymentStatus: paymentStatus || "Pending",
-      paymentMethod: paymentMethod || null,
-      transactionId: transactionId || null,
-    };
     const message = await createPaymentService(newPayment);
     res.status(201).json({ message: "✅ " + message });
   } catch (error: any) {
@@ -135,15 +160,15 @@ export const updatePayment = async (req: Request, res: Response) => {
 
   const updateData: { [key: string]: any } = {};
   for (const key in req.body) {
-    if (req.body.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(req.body, key)) {
       let value = req.body[key];
-      if (key === 'bookingId') {
+      if (["bookingId", "nationalId"].includes(key)) {
         value = parseInt(value);
         if (isNaN(value)) {
           res.status(400).json({ error: `🚫 Invalid number format for ${key}` });
           return;
         }
-      } else if (key === 'amount') {
+      } else if (key === "amount") {
         value = parseFloat(value);
         if (isNaN(value)) {
           res.status(400).json({ error: `🚫 Invalid number format for ${key}` });
@@ -181,3 +206,58 @@ export const deletePayment = async (req: Request, res: Response) => {
     res.status(500).json({ error: "🚫 " + (error.message || "Failed to delete payment") });
   }
 };
+
+// Stripe Checkout Session
+// Stripe Checkout Session
+export const createCheckoutSession = async (req: Request, res: Response) => {
+  const { amount, nationalId, bookingId } = req.body;
+
+  console.log("💬 Received checkout session request:", {
+    amount,
+    nationalId,
+    bookingId,
+  });
+
+  if (
+    typeof amount !== "number" ||
+    typeof nationalId !== "number" ||
+    typeof bookingId !== "number" ||
+    amount <= 0
+  ) {
+    return res.status(400).json({
+      error: "🚫 Invalid input. 'amount', 'nationalId', and 'bookingId' are required and must be valid numbers.",
+    });
+  }
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            unit_amount: amount, // amount in cents
+            product_data: {
+              name: "Ticket booking Payment",
+              description: "Paying for the tickets",
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: {
+        nationalId: nationalId.toString(),
+        bookingId: bookingId.toString(),
+      },
+      success_url: "http://localhost:5173/Dashboard/MyBookings",
+      cancel_url: "http://localhost:5173/",
+    });
+
+    res.status(200).json({ url: session.url });
+  } catch (err: any) {
+    console.error("❌ Stripe checkout session error:", err);
+    res.status(500).json({ error: "🚫 Failed to create checkout session" });
+  }
+};
+

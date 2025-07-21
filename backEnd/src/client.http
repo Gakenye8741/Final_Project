@@ -14,9 +14,21 @@ Content-Type: application/json
     "contactPhone": "+25412345678",
     "address": "50 Nyeri",
     "role":"admin"
-    
-  
+
   }
+
+###
+POST http://localhost:5000/api/responses
+Content-Type: application/json
+
+{
+  "ticketId":"1" ,
+  "nationalId":41436942,
+  "message": "will work on that as soon as possible"
+}
+
+###
+GET http://localhost:5000/api/payments
 
 ###
 POST http://localhost:5000/api/auth/login

@@ -1,5 +1,3 @@
-
-
 import { eq, desc } from "drizzle-orm";
 import db from "../../drizzle/db";
 import {
@@ -38,6 +36,19 @@ export const getPaymentsByBookingIdService = async (
 ): Promise<TSelectPayment[]> => {
   return await db.query.payments.findMany({
     where: eq(payments.bookingId, bookingId),
+    orderBy: [desc(payments.paymentDate)],
+    with: {
+      booking: true,
+    },
+  });
+};
+
+// ✅ Get payments by National ID
+export const getPaymentsByNationalIdService = async (
+  nationalId: number
+): Promise<TSelectPayment[]> => {
+  return await db.query.payments.findMany({
+    where: eq(payments.nationalId, nationalId),
     orderBy: [desc(payments.paymentDate)],
     with: {
       booking: true,
